@@ -9,7 +9,6 @@ export interface OneOnOneSettings {
 	peopleProfilesFolder: string;
 	defaultMoods: string[];
 	themeKeywords: Record<string, string[]>;
-	slackWebhookUrl?: string;
 }
 
 export const DEFAULT_SETTINGS: OneOnOneSettings = {
@@ -25,8 +24,7 @@ export const DEFAULT_SETTINGS: OneOnOneSettings = {
 		'Goals & OKRs': ['goal', 'okr', 'objective', 'milestone', 'target', 'metric'],
 		'Feedback': ['feedback', 'review', 'performance', 'improvement', 'recognition'],
 		'Work-Life Balance': ['balance', 'pto', 'vacation', 'time off', 'hours', 'flexibility']
-	},
-	slackWebhookUrl: ''
+	}
 }
 
 export class OneOnOneSettingTab extends PluginSettingTab {
@@ -74,19 +72,6 @@ export class OneOnOneSettingTab extends PluginSettingTab {
 				.setValue(this.plugin.settings.peopleProfilesFolder)
 				.onChange(async (value) => {
 					this.plugin.settings.peopleProfilesFolder = value;
-					await this.plugin.saveSettings();
-				}));
-
-		containerEl.createEl('h3', {text: 'Slack Integration'});
-		
-		new Setting(containerEl)
-			.setName('Slack Webhook URL')
-			.setDesc('Optional: Webhook URL to post reflections to Slack')
-			.addText(text => text
-				.setPlaceholder('https://hooks.slack.com/services/...')
-				.setValue(this.plugin.settings.slackWebhookUrl || '')
-				.onChange(async (value) => {
-					this.plugin.settings.slackWebhookUrl = value;
 					await this.plugin.saveSettings();
 				}));
 

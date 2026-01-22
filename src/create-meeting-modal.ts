@@ -2,6 +2,7 @@
 // ABOUTME: Provides structured input form for person, date, mood, and topics
 import {App, Modal, Notice, TFile} from 'obsidian';
 import OneOnOneManager from './main';
+import {ReflectionPromptModal} from './reflection-prompt-modal';
 
 export class CreateMeetingModal extends Modal {
 	plugin: OneOnOneManager;
@@ -117,6 +118,8 @@ export class CreateMeetingModal extends Modal {
 			
 			new Notice('1:1 meeting note created!');
 			this.close();
+			
+			new ReflectionPromptModal(this.app, this.plugin, file.path, this.person).open();
 		} catch (error) {
 			const message = error instanceof Error ? error.message : 'Unknown error';
 			new Notice(`Error creating note: ${message}`);

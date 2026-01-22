@@ -763,3 +763,66 @@
 	color: var(--text-muted);
 	font-size: 0.9em;
 }
+
+/* Reflection Modal Styles */
+.reflection-subtitle {
+	color: var(--text-muted);
+	margin-bottom: 20px;
+}
+
+.reflection-prompts {
+	background: var(--background-secondary);
+	padding: 20px;
+	border-radius: 8px;
+	margin-bottom: 20px;
+}
+
+.reflection-prompt-item {
+	margin-bottom: 20px;
+}
+
+.reflection-prompt-item:last-child {
+	margin-bottom: 0;
+}
+
+.reflection-prompt-item strong {
+	display: block;
+	color: var(--text-accent);
+	margin-bottom: 5px;
+	font-size: 1.05em;
+}
+
+.reflection-prompt-text {
+	color: var(--text-muted);
+	margin: 0;
+	font-size: 0.95em;
+	font-style: italic;
+}
+
+.reflection-info {
+	background: var(--background-modifier-border);
+	padding: 12px;
+	border-radius: 6px;
+	margin-bottom: 20px;
+	border-left: 4px solid var(--interactive-accent);
+}
+
+.reflection-info-text {
+	margin: 0;
+	color: var(--text-muted);
+	font-size: 0.9em;
+}
+
+.reflection-primary-btn {
+	background: var(--interactive-accent);
+	color: var(--text-on-accent);
+}
+
+.reflection-slack-btn {
+	background: #4A154B;
+	color: white;
+}
+
+.reflection-slack-btn:hover {
+	opacity: 0.8;
+}
