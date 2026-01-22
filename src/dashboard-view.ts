@@ -173,6 +173,16 @@ export class DashboardView extends ItemView {
 				modal.open();
 			});
 
+			const coachingBtn = actionsDiv.createEl('button', {
+				text: '📋 Plan',
+				cls: 'person-action-btn-small',
+				attr: {title: 'View coaching plan'}
+			});
+			coachingBtn.addEventListener('click', async (e) => {
+				e.stopPropagation();
+				await this.plugin.openCoachingPlanView(person);
+			});
+
 			const editBtn = actionsDiv.createEl('button', {
 				text: '✏️',
 				cls: 'person-action-btn-small',

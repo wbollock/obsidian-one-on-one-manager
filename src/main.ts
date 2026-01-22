@@ -4,6 +4,7 @@ import {Plugin, WorkspaceLeaf} from 'obsidian';
 import {DEFAULT_SETTINGS, OneOnOneSettings, OneOnOneSettingTab} from "./settings";
 import {DashboardView, DASHBOARD_VIEW_TYPE} from './dashboard-view';
 import {TimelineView, TIMELINE_VIEW_TYPE} from './timeline-view';
+import {CoachingPlanView, COACHING_PLAN_VIEW_TYPE} from './coaching-plan-view';
 import {CreateMeetingModal} from './create-meeting-modal';
 import {PersonProfileModal} from './person-profile-modal';
 import {PeopleManager} from './people-manager';
@@ -20,6 +21,16 @@ export default class OneOnOneManager extends Plugin {
 		this.registerView(
 			DASHBOARD_VIEW_TYPE,
 			(leaf) => new DashboardView(leaf, this)
+		);
+
+		this.registerView(
+			TIMELINE_VIEW_TYPE,
+			(leaf) => new TimelineView(leaf, this, '')
+		);
+
+		this.registerView(
+			COACHING_PLAN_VIEW_TYPE,
+			(leaf) => new CoachingPlanView(leaf, this, '')
 		);
 
 		this.addRibbonIcon('users', 'Open 1:1 Dashboard', () => {
@@ -81,9 +92,18 @@ export default class OneOnOneManager extends Plugin {
 		}
 	}
 
+	async openCoachingPlanView(person: string): Promise<void> {
+		const leaf = this.app.workspace.getLeaf('tab');
+		if (leaf) {
+			const view = new CoachingPlanView(leaf, this, person);
+			await leaf.open(view);
+		}
+	}
+
 	onunload() {
 		this.app.workspace.detachLeavesOfType(DASHBOARD_VIEW_TYPE);
 		this.app.workspace.detachLeavesOfType(TIMELINE_VIEW_TYPE);
+		this.app.workspace.detachLeavesOfType(COACHING_PLAN_VIEW_TYPE);
 	}
 
 	async loadSettings() {
