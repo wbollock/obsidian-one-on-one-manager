@@ -5,12 +5,17 @@ import OneOnOneManager from "./main";
 
 export interface OneOnOneSettings {
 	oneOnOneFolder: string;
+	coachingPlansFolder: string;
+	peopleProfilesFolder: string;
 	defaultMoods: string[];
 	themeKeywords: Record<string, string[]>;
+	slackWebhookUrl?: string;
 }
 
 export const DEFAULT_SETTINGS: OneOnOneSettings = {
 	oneOnOneFolder: '1-1s',
+	coachingPlansFolder: '1-1s/coaching-plans',
+	peopleProfilesFolder: '1-1s/people',
 	defaultMoods: ['Great', 'Good', 'Okay', 'Challenging', 'Difficult'],
 	themeKeywords: {
 		'Career Growth': ['promotion', 'career', 'growth', 'development', 'advancement', 'level'],
@@ -20,7 +25,8 @@ export const DEFAULT_SETTINGS: OneOnOneSettings = {
 		'Goals & OKRs': ['goal', 'okr', 'objective', 'milestone', 'target', 'metric'],
 		'Feedback': ['feedback', 'review', 'performance', 'improvement', 'recognition'],
 		'Work-Life Balance': ['balance', 'pto', 'vacation', 'time off', 'hours', 'flexibility']
-	}
+	},
+	slackWebhookUrl: ''
 }
 
 export class OneOnOneSettingTab extends PluginSettingTab {
@@ -46,6 +52,41 @@ export class OneOnOneSettingTab extends PluginSettingTab {
 				.setValue(this.plugin.settings.oneOnOneFolder)
 				.onChange(async (value) => {
 					this.plugin.settings.oneOnOneFolder = value;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(containerEl)
+			.setName('Coaching Plans Folder')
+			.setDesc('Where to store private coaching plans for each person')
+			.addText(text => text
+				.setPlaceholder('1-1s/coaching-plans')
+				.setValue(this.plugin.settings.coachingPlansFolder)
+				.onChange(async (value) => {
+					this.plugin.settings.coachingPlansFolder = value;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(containerEl)
+			.setName('People Profiles Folder')
+			.setDesc('Where to store person profile information')
+			.addText(text => text
+				.setPlaceholder('1-1s/people')
+				.setValue(this.plugin.settings.peopleProfilesFolder)
+				.onChange(async (value) => {
+					this.plugin.settings.peopleProfilesFolder = value;
+					await this.plugin.saveSettings();
+				}));
+
+		containerEl.createEl('h3', {text: 'Slack Integration'});
+		
+		new Setting(containerEl)
+			.setName('Slack Webhook URL')
+			.setDesc('Optional: Webhook URL to post reflections to Slack')
+			.addText(text => text
+				.setPlaceholder('https://hooks.slack.com/services/...')
+				.setValue(this.plugin.settings.slackWebhookUrl || '')
+				.onChange(async (value) => {
+					this.plugin.settings.slackWebhookUrl = value;
 					await this.plugin.saveSettings();
 				}));
 

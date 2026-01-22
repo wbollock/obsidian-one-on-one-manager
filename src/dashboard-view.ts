@@ -1,8 +1,10 @@
 // ABOUTME: Dashboard view showing 1:1 analytics and visualizations
 // ABOUTME: Displays meeting frequency, themes, action items, and mood trends
-import {ItemView, WorkspaceLeaf} from 'obsidian';
+import {ItemView, WorkspaceLeaf, Notice} from 'obsidian';
 import OneOnOneManager from './main';
 import {MeetingAnalyzer} from './analyzer';
+import {PersonProfileModal} from './person-profile-modal';
+import {CreateMeetingModal} from './create-meeting-modal';
 
 export const DASHBOARD_VIEW_TYPE = 'one-on-one-dashboard';
 
@@ -40,13 +42,37 @@ export class DashboardView extends ItemView {
 
 		const contentEl = container.createEl('div', {cls: 'one-on-one-dashboard'});
 
-		contentEl.createEl('h1', {text: '1:1 Dashboard', cls: 'dashboard-title'});
+		const headerDiv = contentEl.createEl('div', {cls: 'dashboard-header'});
+		headerDiv.createEl('h1', {text: '1:1 Dashboard', cls: 'dashboard-title'});
+		
+		const actionsDiv = headerDiv.createEl('div', {cls: 'dashboard-actions'});
+		
+		const addPersonBtn = actionsDiv.createEl('button', {
+			text: '+ Add Person',
+			cls: 'dashboard-action-btn'
+		});
+		addPersonBtn.addEventListener('click', () => {
+			new PersonProfileModal(this.app, this.plugin, null, async (profile) => {
+				await this.plugin.peopleManager.savePersonProfile(profile);
+				await this.render();
+			}).open();
+		});
+
+		const refreshBtn = actionsDiv.createEl('button', {
+			text: '🔄 Refresh',
+			cls: 'dashboard-action-btn'
+		});
+		refreshBtn.addEventListener('click', async () => {
+			await this.render();
+			new Notice('Dashboard refreshed');
+		});
 
 		const meetings = await this.analyzer.getAllMeetings();
 		const people = await this.analyzer.getAllPeople();
+		const profiles = await this.plugin.peopleManager.getAllPeople();
 
 		await this.renderOverview(contentEl, meetings, people);
-		await this.renderPeopleSection(contentEl, people);
+		await this.renderPeopleSection(contentEl, people, profiles);
 		await this.renderThemesSection(contentEl, meetings);
 		await this.renderActionItemsSection(contentEl, meetings);
 	}
@@ -83,7 +109,7 @@ export class DashboardView extends ItemView {
 		card.createEl('div', {text: label, cls: 'stat-label'});
 	}
 
-	private async renderPeopleSection(container: HTMLElement, people: string[]): Promise<void> {
+	private async renderPeopleSection(container: HTMLElement, people: string[], profiles: any[]): Promise<void> {
 		const section = container.createEl('div', {cls: 'dashboard-section'});
 		section.createEl('h2', {text: 'Team Members'});
 
@@ -91,10 +117,22 @@ export class DashboardView extends ItemView {
 
 		for (const person of people) {
 			const stats = await this.analyzer.getPersonStats(person);
+			const profile = profiles.find(p => p.name === person);
+			
 			const card = grid.createEl('div', {cls: 'person-card'});
 
 			const header = card.createEl('div', {cls: 'person-header'});
 			header.createEl('h3', {text: person});
+			
+			if (profile) {
+				if (profile.role) {
+					const roleEl = card.createEl('div', {cls: 'person-role'});
+					roleEl.createEl('span', {text: profile.role});
+					if (profile.level) {
+						roleEl.createEl('span', {text: ` (${profile.level})`, cls: 'person-level'});
+					}
+				}
+			}
 			
 			const meetingCount = card.createEl('div', {cls: 'person-stat'});
 			meetingCount.createEl('span', {text: 'Meetings: '});
@@ -121,6 +159,32 @@ export class DashboardView extends ItemView {
 					});
 				}
 			}
+
+			const actionsDiv = card.createEl('div', {cls: 'person-actions'});
+			
+			const create11Btn = actionsDiv.createEl('button', {
+				text: '+ New 1:1',
+				cls: 'person-action-btn'
+			});
+			create11Btn.addEventListener('click', (e) => {
+				e.stopPropagation();
+				const modal = new CreateMeetingModal(this.app, this.plugin);
+				modal.person = person;
+				modal.open();
+			});
+
+			const editBtn = actionsDiv.createEl('button', {
+				text: '✏️',
+				cls: 'person-action-btn-small',
+				attr: {title: 'Edit profile'}
+			});
+			editBtn.addEventListener('click', async (e) => {
+				e.stopPropagation();
+				new PersonProfileModal(this.app, this.plugin, profile, async (updatedProfile) => {
+					await this.plugin.peopleManager.savePersonProfile(updatedProfile);
+					await this.render();
+				}).open();
+			});
 
 			card.addEventListener('click', () => {
 				this.plugin.openTimelineView(person);

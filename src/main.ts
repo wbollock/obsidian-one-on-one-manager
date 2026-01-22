@@ -5,12 +5,17 @@ import {DEFAULT_SETTINGS, OneOnOneSettings, OneOnOneSettingTab} from "./settings
 import {DashboardView, DASHBOARD_VIEW_TYPE} from './dashboard-view';
 import {TimelineView, TIMELINE_VIEW_TYPE} from './timeline-view';
 import {CreateMeetingModal} from './create-meeting-modal';
+import {PersonProfileModal} from './person-profile-modal';
+import {PeopleManager} from './people-manager';
 
 export default class OneOnOneManager extends Plugin {
 	settings: OneOnOneSettings;
+	peopleManager: PeopleManager;
 
 	async onload() {
 		await this.loadSettings();
+		
+		this.peopleManager = new PeopleManager(this.app, this.settings);
 
 		this.registerView(
 			DASHBOARD_VIEW_TYPE,
@@ -26,6 +31,16 @@ export default class OneOnOneManager extends Plugin {
 			name: 'Create 1:1 Meeting Note',
 			callback: () => {
 				new CreateMeetingModal(this.app, this).open();
+			}
+		});
+
+		this.addCommand({
+			id: 'add-person',
+			name: 'Add Person Profile',
+			callback: () => {
+				new PersonProfileModal(this.app, this, null, async (profile) => {
+					await this.peopleManager.savePersonProfile(profile);
+				}).open();
 			}
 		});
 

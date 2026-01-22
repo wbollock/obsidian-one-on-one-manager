@@ -170,6 +170,24 @@ date: ${date}
 
 ## Follow-up for Next Time
 
+
+---
+
+## 🔒 Private Manager Notes
+
+<!-- This section is just for you - won't be shared -->
+
+**My Observations:**
+
+
+**Coaching Notes:**
+
+
+**My Reaction:**
+
+
+**Follow-up for Me:**
+
 `;
 
 		return template;
