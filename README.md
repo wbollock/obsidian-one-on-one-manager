@@ -1,15 +1,47 @@
-# 1:1 Manager - Obsidian Plugin
+# 1:1 Manager - Obsidian Plugin for Engineering Managers
 
-Track and analyze your 1:1 meetings with automatic theme extraction, action item tracking, meeting history timelines, and a visual analytics dashboard.
+A comprehensive 1:1 management system designed for engineering managers to track meetings, coaching plans, private observations, and team development. Built around the core workflow of reflecting on conversations and maintaining coaching relationships.
 
-## Features
+## Core Philosophy
 
-- **📝 Structured Meeting Notes**: Create 1:1 notes with templates including person, date, mood, topics, and action items
-- **🎯 Theme Extraction**: Automatically detect recurring themes (career growth, technical challenges, team dynamics, etc.)
-- **📊 Analytics Dashboard**: Visual overview with meeting frequency, theme analysis, and action item completion rates
-- **📅 Timeline View**: Chronological history of all meetings with a specific person
-- **✅ Action Item Tracking**: Parse and track checkboxes, highlight incomplete items
-- **🎨 Beautiful Visuals**: Clean, modern interface with charts and color-coded indicators
+This plugin is designed around what engineering managers actually need: **private notes for reflection, coaching plans, and topic history**. It's not just about tracking meetings—it's about becoming a better manager through structured reflection and intentional coaching.
+
+## Key Features
+
+### 🔒 Private Manager Notes
+Every 1:1 note has a separate "Private Manager Notes" section for your internal observations:
+- **Your Observations**: Energy level, engagement, behavioral changes
+- **Coaching Notes**: Patterns you're noticing, areas to work on
+- **Your Reaction**: How you feel about the 1:1
+- **Follow-up for Me**: Your commitments and action items
+
+### 🎯 Coaching Plans
+Dedicated coaching plan per person with:
+- **Focus Areas**: What you're actively coaching them on (with priority levels)
+- **Growth Experiments**: Stretch assignments and their outcomes
+- **Feedback to Deliver**: Track what feedback needs to be delivered
+- **Discussion Patterns**: What topics keep coming up?
+- **Topic History**: Complete view of all topics discussed over time
+
+### 📝 Post-1:1 Reflection Prompts
+After creating a 1:1, you're prompted to reflect:
+- How did they seem? (Energy & engagement)
+- What stood out to you? (Observations)
+- What do you want to coach them on?
+- How do you feel about this conversation?
+- What do YOU need to do?
+
+### 👥 Person Management
+- Add person profiles with role, level, team
+- Track direct reports with metadata
+- Quick actions: Create new 1:1, view coaching plan, edit profile
+- Visual dashboard showing coaching relationships
+
+### 📊 Analytics Dashboard
+- Meeting frequency and trends
+- Common themes across your team
+- Action item completion rates
+- Risk indicators (people who need attention)
 
 ## Installation & Setup
 
@@ -71,6 +103,35 @@ This watches for file changes and rebuilds automatically. You'll need to reload 
 
 ## Usage
 
+### Quick Start Workflow
+
+1. **Add Your Team**
+   - Command Palette → "Add Person Profile"
+   - Fill in name, role, level, team
+   - Repeat for each direct report
+
+2. **Create a 1:1**
+   - Dashboard → Click "+ New 1:1" on person card
+   - OR Command Palette → "Create 1:1 Meeting Note"
+   - Fill in date, mood, topics
+
+3. **During the Meeting**
+   - Take notes in "Discussion Points"
+   - Track action items with checkboxes
+   - Note any topics discussed
+
+4. **After the Meeting**
+   - Reflection prompt appears automatically
+   - Add your private observations
+   - Note any coaching thoughts
+   - Record your reaction
+
+5. **Review Coaching Plan**
+   - Click "📋 Plan" on person card
+   - Review focus areas and patterns
+   - Update growth experiments
+   - Check feedback to deliver
+
 ### Creating a 1:1 Meeting Note
 
 1. **Via Command Palette** (Ctrl/Cmd+P):
@@ -104,34 +165,69 @@ This watches for file changes and rebuilds automatically. You'll need to reload 
    ## Notes
    
    John mentioned interest in promotion. Need to discuss career path.
+   
+   ---
+   
+   ## 🔒 Private Manager Notes
+   
+   **My Observations:**
+   Seemed more confident than last time. Brought up career growth 
+   unprompted - good sign. Still avoiding conflict with peers.
+   
+   **Coaching Notes:**
+   - Continue building confidence in technical discussions
+   - Next: Give feedback about peer relationships
+   - Watch for: Any signs of overwhelm with new project
+   
+   **My Reaction:**
+   Great energy today. Feel good about their trajectory.
+   
+   **Follow-up for Me:**
+   - Check in about peer feedback in 2 weeks
+   - Prepare promotion packet outline
    ```
 
-### Viewing the Dashboard
+### Viewing Coaching Plans
+
+Click "📋 Plan" on any person card to see:
+- **Overview**: Role, level, focus areas count
+- **Focus Areas**: Active coaching priorities
+- **Growth Experiments**: Stretch assignments in progress
+- **Feedback to Deliver**: Pending and delivered feedback
+- **Discussion Patterns**: Topics that keep coming up
+- **Topic History**: Complete chronological topic list
+
+### Managing People
+
+### Managing People
+
+- **Add Person**: Dashboard → "+ Add Person" or Command Palette
+- **Edit Profile**: Click ✏️ on person card
+- **View Timeline**: Click person card to see all 1:1s
+- **View Coaching Plan**: Click "📋 Plan" on person card
+
+### Dashboard Overview
 
 1. **Via Ribbon Icon**: Click the 👥 icon in the left sidebar
 2. **Via Command Palette**: Type "Open Dashboard"
 
 The dashboard shows:
-- Total people, meetings, and monthly stats
-- Team member cards (click to view timeline)
-- Common themes across all meetings
+- Quick actions: Add person, refresh
+- Team member cards with:
+  - Role and level
+  - Meeting count and last meeting date
+  - Action item completion rate
+  - Top themes
+  - Quick buttons: New 1:1, Coaching Plan, Edit
+- Theme analysis across all meetings
 - Outstanding action items
-
-### Viewing Timeline for a Person
-
-- Click any person card in the dashboard
-- Or use the Command Palette: "Open Timeline" (coming soon)
-
-Timeline shows:
-- All meetings with that person chronologically
-- Themes detected in each meeting
-- Action items status
-- Meeting mood trends
 
 ### Customizing Settings
 
 Go to Settings → 1:1 Manager to configure:
 - **1:1 Notes Folder**: Where meeting notes are stored (default: `1-1s`)
+- **Coaching Plans Folder**: Where coaching plans are stored (default: `1-1s/coaching-plans`)
+- **People Profiles Folder**: Where person profiles are stored (default: `1-1s/people`)
 - **Theme Keywords**: Customize automatic theme detection
 
 ## Features in Detail
@@ -167,29 +263,36 @@ Example:
 
 ### Best Practices
 
-1. **Consistent Naming**: Use the same person name across all meetings for accurate tracking
-2. **Use Frontmatter**: Always include person and date in frontmatter for proper parsing
-3. **Add Moods**: Track meeting sentiment over time
-4. **Tag Action Items**: Use `@name` and `📅 date` for better tracking
-5. **Be Specific**: Mention concrete topics to help theme detection
-6. **Review Dashboard**: Check weekly for incomplete action items and theme trends
+1. **Use Private Notes Consistently**: The real value is in your reflections, not just meeting logs
+2. **Review Coaching Plans Weekly**: Update focus areas and check discussion patterns
+3. **Be Honest in Observations**: These are private—capture what you really think
+4. **Track Your Commitments**: Use "Follow-up for Me" to remember what YOU promised
+5. **Update Growth Experiments**: Record outcomes when experiments complete
+6. **Deliver Feedback Regularly**: Use the feedback tracker to stay accountable
+7. **Notice Patterns**: If the same topic comes up repeatedly, that's a signal
+8. **Consistent Naming**: Use the same person name across all meetings for accurate tracking
+9. **Add Moods**: Track meeting sentiment over time to spot trends
 
 ## Project Structure
 
 ```
 one-on-one-manager/
 ├── src/
-│   ├── main.ts              # Plugin entry point
-│   ├── settings.ts          # Settings configuration
-│   ├── types.ts             # TypeScript interfaces
-│   ├── analyzer.ts          # Meeting analysis engine
-│   ├── dashboard-view.ts    # Dashboard UI
-│   ├── timeline-view.ts     # Timeline UI
-│   └── create-meeting-modal.ts  # Meeting creation modal
-├── styles.css               # Plugin styles
-├── manifest.json            # Plugin metadata
-├── package.json             # Dependencies
-└── README.md               # This file
+│   ├── main.ts                      # Plugin entry point
+│   ├── settings.ts                  # Settings configuration
+│   ├── types.ts                     # TypeScript interfaces
+│   ├── analyzer.ts                  # Meeting analysis engine
+│   ├── people-manager.ts            # Person profile CRUD operations
+│   ├── dashboard-view.ts            # Dashboard UI
+│   ├── timeline-view.ts             # Timeline UI
+│   ├── coaching-plan-view.ts        # Coaching plan UI
+│   ├── create-meeting-modal.ts      # Meeting creation modal
+│   ├── person-profile-modal.ts      # Person management modal
+│   └── reflection-prompt-modal.ts   # Post-meeting reflection prompt
+├── styles.css                       # Plugin styles
+├── manifest.json                    # Plugin metadata
+├── package.json                     # Dependencies
+└── README.md                        # This file
 ```
 
 ## Troubleshooting
