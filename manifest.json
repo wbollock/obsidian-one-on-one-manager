@@ -1,0 +1,10 @@
+{
+	"id": "one-on-one-manager",
+	"name": "1:1 Manager",
+	"version": "1.0.0",
+	"minAppVersion": "0.15.0",
+	"description": "Track 1:1 meetings with themes, action items, history timelines, and analytics dashboard",
+	"author": "Your Name",
+	"authorUrl": "",
+	"isDesktopOnly": false
+}
