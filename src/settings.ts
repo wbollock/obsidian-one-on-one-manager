@@ -9,6 +9,13 @@ export interface OneOnOneSettings {
 	peopleProfilesFolder: string;
 	defaultMoods: string[];
 	themeKeywords: Record<string, string[]>;
+	meetingTemplate: string;
+	reflectionPrompts: ReflectionPrompt[];
+}
+
+export interface ReflectionPrompt {
+	label: string;
+	prompt: string;
 }
 
 export const DEFAULT_SETTINGS: OneOnOneSettings = {
@@ -24,7 +31,80 @@ export const DEFAULT_SETTINGS: OneOnOneSettings = {
 		'Goals & OKRs': ['goal', 'okr', 'objective', 'milestone', 'target', 'metric'],
 		'Feedback': ['feedback', 'review', 'performance', 'improvement', 'recognition'],
 		'Work-Life Balance': ['balance', 'pto', 'vacation', 'time off', 'hours', 'flexibility']
-	}
+	},
+	meetingTemplate: `---
+person: {{person}}
+date: {{date}}
+{{#if mood}}mood: {{mood}}{{/if}}
+{{#if topics}}topics:
+{{#each topics}}  - {{this}}
+{{/each}}{{/if}}
+---
+
+# 1:1 with {{person}}
+
+**Date:** {{date}}
+{{#if mood}}**Mood:** {{mood}}{{/if}}
+
+## Discussion Points
+
+### Topic 1
+
+
+### Topic 2
+
+
+## Action Items
+
+- [ ] 
+- [ ] 
+
+## Notes
+
+
+## Follow-up for Next Time
+
+
+---
+
+## 🔒 Private Manager Notes
+
+<!-- This section is just for you - won't be shared -->
+
+**My Observations:**
+
+
+**Coaching Notes:**
+
+
+**My Reaction:**
+
+
+**Follow-up for Me:**
+
+`,
+	reflectionPrompts: [
+		{
+			label: 'Energy & Engagement',
+			prompt: 'How did they seem? What was their energy level and engagement like?'
+		},
+		{
+			label: 'Key Observations',
+			prompt: 'What stood out to you? Any changes in behavior, concerns, or wins?'
+		},
+		{
+			label: 'Coaching Notes',
+			prompt: 'What do you want to coach them on? Any patterns emerging?'
+		},
+		{
+			label: 'Your Reaction',
+			prompt: 'How do you feel about this 1:1? Any concerns or positive feelings?'
+		},
+		{
+			label: 'Follow-up Actions',
+			prompt: 'What do YOU need to do? Any commitments you made?'
+		}
+	]
 }
 
 export class OneOnOneSettingTab extends PluginSettingTab {

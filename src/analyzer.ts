@@ -13,7 +13,27 @@ export class MeetingAnalyzer {
 
 		const meetings: OneOnOneMeeting[] = [];
 		const files = this.app.vault.getMarkdownFiles()
-			.filter(f => f.path.startsWith(this.settings.oneOnOneFolder));
+			.filter(f => {
+				if (!f.path.startsWith(this.settings.oneOnOneFolder)) return false;
+				
+				// Skip people profiles and coaching plans folders
+				if (f.path.includes('/people/') || f.path.includes('/coaching-plans/')) return false;
+				
+				const pathParts = f.path.split('/');
+				const fileName = pathParts[pathParts.length - 1];
+				
+				// New format: 1-1s/{person}/{date}.md
+				const isNewFormat = pathParts.length >= 3 && 
+								   fileName && 
+								   fileName.match(/^\d{4}-\d{2}-\d{2}\.md$/);
+				
+				// Old format: 1-1s/{date} - {person}.md
+				const isOldFormat = pathParts.length === 2 && 
+								   fileName && 
+								   fileName.match(/^\d{4}-\d{2}-\d{2}\s-\s.+\.md$/);
+				
+				return isNewFormat || isOldFormat;
+			});
 
 		for (const file of files) {
 			const meeting = await this.parseMeeting(file);

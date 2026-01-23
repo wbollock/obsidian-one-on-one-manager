@@ -68,12 +68,21 @@ export class DashboardView extends ItemView {
 		});
 
 		const meetings = await this.analyzer.getAllMeetings();
-		const people = await this.analyzer.getAllPeople();
+		const peopleWithMeetings = await this.analyzer.getAllPeople();
 		const profiles = await this.plugin.peopleManager.getAllPeople();
+		
+		// Merge people from meetings and profiles
+		const allPeopleSet = new Set<string>();
+		for (const person of peopleWithMeetings) {
+			allPeopleSet.add(person);
+		}
+		for (const profile of profiles) {
+			allPeopleSet.add(profile.name);
+		}
+		const people = Array.from(allPeopleSet).sort();
 
 		await this.renderOverview(contentEl, meetings, people);
 		await this.renderPeopleSection(contentEl, people, profiles);
-		await this.renderThemesSection(contentEl, meetings);
 		await this.renderActionItemsSection(contentEl, meetings);
 	}
 
@@ -112,6 +121,36 @@ export class DashboardView extends ItemView {
 	private async renderPeopleSection(container: HTMLElement, people: string[], profiles: any[]): Promise<void> {
 		const section = container.createEl('div', {cls: 'dashboard-section'});
 		section.createEl('h2', {text: 'Team Members'});
+
+		if (people.length === 0) {
+			const emptyState = section.createEl('div', {cls: 'empty-state'});
+			emptyState.createEl('div', {text: '👥', cls: 'empty-state-icon'});
+			emptyState.createEl('h3', {text: 'No team members yet'});
+			const emptyText = emptyState.createEl('p');
+			emptyText.setText('Get started by adding a person or creating your first 1:1 note.');
+			
+			const emptyActions = emptyState.createEl('div', {cls: 'empty-state-actions'});
+			const addPersonBtn = emptyActions.createEl('button', {
+				text: '+ Add Person',
+				cls: 'dashboard-action-btn'
+			});
+			addPersonBtn.addEventListener('click', () => {
+				new PersonProfileModal(this.app, this.plugin, null, async (profile) => {
+					await this.plugin.peopleManager.savePersonProfile(profile);
+					await this.render();
+				}).open();
+			});
+			
+			const createMeetingBtn = emptyActions.createEl('button', {
+				text: '+ Create 1:1',
+				cls: 'dashboard-action-btn'
+			});
+			createMeetingBtn.addEventListener('click', () => {
+				new CreateMeetingModal(this.app, this.plugin).open();
+			});
+			
+			return;
+		}
 
 		const grid = section.createEl('div', {cls: 'people-grid'});
 
@@ -243,7 +282,10 @@ export class DashboardView extends ItemView {
 		const incomplete = allActions.filter(a => !a.completed);
 		
 		if (incomplete.length === 0) {
-			section.createEl('p', {text: 'All action items completed! 🎉'});
+			const emptyState = section.createEl('div', {cls: 'empty-state-success'});
+			emptyState.createEl('div', {text: '🎉', cls: 'empty-state-icon'});
+			emptyState.createEl('h3', {text: 'All action items completed!'});
+			emptyState.createEl('p', {text: 'Great work! No outstanding action items at the moment.'});
 			return;
 		}
 
