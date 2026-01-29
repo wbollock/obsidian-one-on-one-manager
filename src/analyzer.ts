@@ -123,7 +123,7 @@ export class MeetingAnalyzer {
 
 		const commonThemes = new Map<string, number>();
 		const moods: string[] = [];
-		let completedActions = 0;
+		let openActions = 0;
 		let totalActions = 0;
 
 		for (const meeting of personMeetings) {
@@ -134,7 +134,7 @@ export class MeetingAnalyzer {
 			
 			for (const action of meeting.actionItems) {
 				totalActions++;
-				if (action.completed) completedActions++;
+				if (!action.completed) openActions++;
 			}
 		}
 
@@ -143,7 +143,7 @@ export class MeetingAnalyzer {
 			meetingCount: personMeetings.length,
 			lastMeeting: personMeetings[0]?.date || 'Never',
 			commonThemes,
-			actionItemCompletion: totalActions > 0 ? (completedActions / totalActions) * 100 : 0,
+			actionItemCompletion: openActions,
 			moodTrend: moods
 		};
 	}

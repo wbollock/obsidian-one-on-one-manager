@@ -43,41 +43,22 @@ date: {{date}}
 
 # 1:1 with {{person}}
 
-**Date:** {{date}}
-{{#if mood}}**Mood:** {{mood}}{{/if}}
+## Discussion
 
-## Discussion Points
-
-### Topic 1
-
-
-### Topic 2
-
+- 
 
 ## Action Items
 
 - [ ] 
-- [ ] 
-
-## Notes
-
-
-## Follow-up for Next Time
-
 
 ---
 
-## 🔒 Private Manager Notes
-
-<!-- This section is just for you - won't be shared -->
+## 🔒 Private Notes
 
 **My Observations:**
 
 
 **Coaching Notes:**
-
-
-**My Reaction:**
 
 
 **Follow-up for Me:**
@@ -155,6 +136,62 @@ export class OneOnOneSettingTab extends PluginSettingTab {
 					await this.plugin.saveSettings();
 				}));
 
+		containerEl.createEl('h3', {text: '1:1 Meeting Template'});
+		
+		const templateDesc = containerEl.createEl('p', {
+			cls: 'setting-item-description'
+		});
+		templateDesc.innerHTML = 'Customize the template used when creating new 1:1 meeting notes. You can use variables like <code>{{person}}</code>, <code>{{date}}</code>, <code>{{mood}}</code>, and <code>{{topics}}</code>.';
+
+		const templateButtons = containerEl.createEl('div', {cls: 'template-buttons'});
+		templateButtons.style.marginBottom = '15px';
+		templateButtons.style.display = 'flex';
+		templateButtons.style.gap = '10px';
+
+		const openTemplateBtn = templateButtons.createEl('button', {
+			text: '📝 Edit Template in Note',
+			cls: 'mod-cta'
+		});
+		openTemplateBtn.addEventListener('click', async () => {
+			await this.openTemplateInNote();
+		});
+
+		const loadTemplateBtn = templateButtons.createEl('button', {
+			text: '⬇️ Load from Note',
+		});
+		loadTemplateBtn.addEventListener('click', async () => {
+			await this.loadTemplateFromNote();
+		});
+
+		const resetBtn = templateButtons.createEl('button', {
+			text: '🔄 Reset to Default',
+			cls: 'mod-warning'
+		});
+		resetBtn.addEventListener('click', async () => {
+			if (confirm('Reset the meeting template to default? This will overwrite your current template.')) {
+				this.plugin.settings.meetingTemplate = DEFAULT_SETTINGS.meetingTemplate;
+				await this.plugin.saveSettings();
+				this.display(); // Refresh the settings UI
+			}
+		});
+
+		new Setting(containerEl)
+			.setName('Template Preview')
+			.setDesc('Quick preview/edit (for advanced editing, use the "Edit Template in Note" button above)')
+			.addTextArea(text => {
+				text.setPlaceholder('Enter your template...')
+					.setValue(this.plugin.settings.meetingTemplate)
+					.onChange(async (value) => {
+						this.plugin.settings.meetingTemplate = value;
+						await this.plugin.saveSettings();
+					});
+				text.inputEl.rows = 15;
+				text.inputEl.cols = 60;
+				text.inputEl.style.width = '100%';
+				text.inputEl.style.fontFamily = 'monospace';
+				text.inputEl.style.fontSize = '0.9em';
+			});
+
 		containerEl.createEl('h3', {text: 'Theme Detection'});
 		containerEl.createEl('p', {
 			text: 'Customize keywords for automatic theme detection. Edit theme keywords in settings data file for advanced customization.',
@@ -167,6 +204,82 @@ export class OneOnOneSettingTab extends PluginSettingTab {
 				text: `${theme}: ${keywords.join(', ')}`,
 				cls: 'theme-keyword-item'
 			});
+		}
+	}
+
+	async openTemplateInNote(): Promise<void> {
+		const templateFolder = `${this.plugin.settings.oneOnOneFolder}/.templates`;
+		const templatePath = `${templateFolder}/meeting-template.md`;
+
+		// Ensure folder exists
+		const folderExists = this.app.vault.getAbstractFileByPath(templateFolder);
+		if (!folderExists) {
+			await this.app.vault.createFolder(templateFolder);
+		}
+
+		// Check if template file exists
+		let templateFile = this.app.vault.getAbstractFileByPath(templatePath);
+
+		const templateContent = `# 1:1 Meeting Template
+
+This is your template for creating new 1:1 meeting notes. Edit it as you like!
+
+**Available Variables:**
+- \`{{person}}\` - Person's name
+- \`{{date}}\` - Meeting date
+- \`{{mood}}\` - Meeting mood (optional)
+- \`{{topics}}\` - List of topics (optional)
+
+**Note:** The plugin will automatically add:
+- Outstanding action items from the last meeting
+- Coaching focus areas (if any)
+- Last meeting date
+
+---
+
+${this.plugin.settings.meetingTemplate}
+
+---
+
+**Instructions:**
+1. Edit the template above (below the line)
+2. Save this file (Ctrl/Cmd + S)
+3. Go back to Settings → 1:1 Manager
+4. Click "Load Template from Note" to apply your changes
+`;
+
+		if (!templateFile) {
+			// Create the template file
+			templateFile = await this.app.vault.create(templatePath, templateContent);
+		} else {
+			// Update existing file
+			await this.app.vault.modify(templateFile as any, templateContent);
+		}
+
+		// Open the template file
+		await this.app.workspace.openLinkText(templatePath, '', false);
+	}
+
+	async loadTemplateFromNote(): Promise<void> {
+		const templatePath = `${this.plugin.settings.oneOnOneFolder}/.templates/meeting-template.md`;
+		const templateFile = this.app.vault.getAbstractFileByPath(templatePath);
+
+		if (!templateFile) {
+			alert('Template file not found. Click "Edit Template in Note" first to create it.');
+			return;
+		}
+
+		const content = await this.app.vault.read(templateFile as any);
+		
+		// Extract template between the --- markers
+		const match = content.match(/---\n\n([\s\S]*?)\n\n---/);
+		if (match && match[1]) {
+			this.plugin.settings.meetingTemplate = match[1];
+			await this.plugin.saveSettings();
+			this.display(); // Refresh settings UI
+			alert('✅ Template loaded successfully!');
+		} else {
+			alert('Could not parse template. Make sure the template is between the --- markers.');
 		}
 	}
 }

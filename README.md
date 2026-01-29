@@ -1,105 +1,63 @@
-# 1:1 Manager - Obsidian Plugin for Engineering Managers
+# 1:1 Manager
 
-A comprehensive 1:1 management system designed for engineering managers to track meetings, coaching plans, private observations, and team development. Built around the core workflow of reflecting on conversations and maintaining coaching relationships.
+This is a plugin for managing your one-on-one meetings in Obsidian. If you're a manager (or lead, or anyone who has regular check-ins with people), this gives you a place to keep notes, track what you talked about, and remember what you actually need to do.
 
-## Core Philosophy
+## Why this exists
 
-This plugin is designed around what engineering managers actually need: **private notes for reflection, coaching plans, and topic history**. It's not just about tracking meetings—it's about becoming a better manager through structured reflection and intentional coaching.
+Most one-on-one tools are either too prescriptive or just glorified calendar apps. This plugin assumes you already know how to have a conversation—it just helps you remember what happened and what patterns are emerging.
 
-## Key Features
+It's built around a few simple ideas:
+- Your notes should live where your other notes live (in Obsidian)
+- You need private space to write down what you actually think
+- Patterns matter more than individual meetings
+- Action items are pointless if nobody tracks them
 
-### 🔒 Private Manager Notes
-Every 1:1 note has a separate "Private Manager Notes" section for your internal observations:
-- **Your Observations**: Energy level, engagement, behavioral changes
-- **Coaching Notes**: Patterns you're noticing, areas to work on
-- **Your Reaction**: How you feel about the 1:1
-- **Follow-up for Me**: Your commitments and action items
+## What it does
 
-### 🎯 Coaching Plans
-Dedicated coaching plan per person with:
-- **Focus Areas**: What you're actively coaching them on (with priority levels)
-- **Growth Experiments**: Stretch assignments and their outcomes
-- **Feedback to Deliver**: Track what feedback needs to be delivered
-- **Discussion Patterns**: What topics keep coming up?
-- **Topic History**: Complete view of all topics discussed over time
+### Dashboard
+You get a main view that shows everyone you have 1:1s with. For each person, you can see:
+- How many meetings you've had
+- When the last one was
+- How many open action items they have
+- What topics keep coming up
 
-### 📝 Post-1:1 Reflection Prompts
-After creating a 1:1, you're prompted to reflect:
-- How did they seem? (Energy & engagement)
-- What stood out to you? (Observations)
-- What do you want to coach them on?
-- How do you feel about this conversation?
-- What do YOU need to do?
+Click on someone's card to see all your meetings with them in chronological order.
 
-### 👥 Person Management
-- Add person profiles with role, level, team
-- Track direct reports with metadata
-- Quick actions: Create new 1:1, view coaching plan, edit profile
-- Visual dashboard showing coaching relationships
+### Meeting notes
+When you create a 1:1 note, you get a structured template with sections for discussion points and action items. Action items are just markdown checkboxes—nothing fancy. The plugin counts incomplete items so you can see what's still hanging around.
 
-### 📊 Analytics Dashboard
-- Meeting frequency and trends
-- Common themes across your team
-- Action item completion rates
-- Risk indicators (people who need attention)
+After you create a meeting note, you get prompted to add private observations. This is the good stuff: what you noticed about the person's energy, what you're thinking about coaching-wise, how you felt about the conversation. These notes are stored separately and marked clearly as private.
 
-## Installation & Setup
+### Goals tracking
+Each person can have goals attached to them. You can track progress, add check-ins, note blockers. It's useful for performance review season or just keeping tabs on what people are working toward.
 
-### Prerequisites
+### People management
+Add profiles for your direct reports (or whoever you meet with regularly). Track their role, level, team, start date. You can edit or delete people from the dashboard.
 
-- Obsidian v0.15.0 or higher
-- Node.js v16 or higher
-- npm
+### Theme detection
+The plugin looks at your meeting notes and automatically tags common themes: career growth, technical challenges, team dynamics, workload, etc. This helps you spot patterns—like if someone keeps bringing up the same concern but you haven't done anything about it yet.
 
-### Local Development Setup
+## Setup
 
-1. **Navigate to the plugin directory:**
+You'll need Obsidian v0.15.0+ and Node.js v16+ to build this.
+
+1. Clone or download this repo into your vault's plugins folder:
+   - Windows: `<YourVault>\.obsidian\plugins\one-on-one-manager`
+   - Mac/Linux: `<YourVault>/.obsidian/plugins/one-on-one-manager`
+
+2. Install and build:
    ```bash
    cd one-on-one-manager
-   ```
-
-2. **Install dependencies:**
-   ```bash
    npm install
-   ```
-
-3. **Build the plugin:**
-   ```bash
    npm run build
    ```
-   
-   This creates `main.js`, `styles.css`, and `manifest.json` in the root directory.
 
-4. **Copy plugin to your Obsidian vault:**
-   
-   Copy the entire `one-on-one-manager` folder to your vault's plugins directory:
-   
-   - **Windows**: `<VaultFolder>\.obsidian\plugins\`
-   - **Mac**: `<VaultFolder>/.obsidian/plugins/`
-   - **Linux**: `<VaultFolder>/.obsidian/plugins/`
-   
-   Example:
-   ```bash
-   cp -r one-on-one-manager ~/Documents/MyVault/.obsidian/plugins/
-   ```
+3. Enable the plugin in Obsidian:
+   - Settings → Community plugins
+   - Turn off Safe mode if it's on
+   - Find "1:1 Manager" and toggle it on
 
-5. **Enable the plugin in Obsidian:**
-   - Open Obsidian
-   - Go to Settings → Community plugins
-   - Turn off "Safe mode" (if not already disabled)
-   - Click "Reload plugins" (or restart Obsidian)
-   - Find "1:1 Manager" in the list
-   - Toggle it on
-
-### Development Mode (Hot Reload)
-
-For active development with automatic rebuilds:
-
-```bash
-npm run dev
-```
-
-This watches for file changes and rebuilds automatically. You'll need to reload the plugin in Obsidian after each build (Ctrl/Cmd+R or use the "Reload app without saving" command).
+For development, run `npm run dev` to auto-rebuild on changes. You'll still need to reload Obsidian (Ctrl/Cmd+R) to see updates.
 
 ## Usage
 
@@ -197,7 +155,59 @@ Click "📋 Plan" on any person card to see:
 - **Discussion Patterns**: Topics that keep coming up
 - **Topic History**: Complete chronological topic list
 
-### Managing People
+### Adding Agenda Items
+
+Capture topics to discuss in your next 1:1:
+
+1. **Via Command Palette** (Ctrl/Cmd+P):
+   - Type "Add Agenda Item for Next 1:1"
+   - Select the person from the dropdown
+   - Enter the topic you want to discuss
+   - Click "Add Item"
+
+2. **From Dashboard**:
+   - Agenda items appear on each person card
+   - Check off items as you discuss them
+   - Delete items using the × button
+
+Agenda items are stored in the person's profile and automatically cleared when checked off. This helps ensure important topics don't get lost between meetings.
+
+### Managing Goals
+
+Track goals and OKRs for each person with year-over-year tracking:
+
+1. **View Goals**:
+   - Click "🎯 Goals" button on any person card in the dashboard
+   - Or use Command Palette → "View Goals"
+
+2. **Create a Goal**:
+   - In the Goals view, click "+ New Goal"
+   - Fill in:
+     - Title and description
+     - Category (Career, Technical, Project, etc.)
+     - Timeframe (Q1-Q4, 6-month, Annual, Custom)
+     - Year and target dates
+     - Key Results (optional measurable outcomes)
+   - Click "Create Goal"
+
+3. **Track Progress**:
+   - Edit goals to update progress percentage
+   - Add check-ins to record status updates
+   - Note blockers that are preventing progress
+   - Mark key results as completed
+
+4. **Year Management**:
+   - Switch between years using the year selector
+   - Archive previous year's goals
+   - Carry over incomplete goals to the current year
+   - View year-over-year comparison stats
+
+Goals are stored in separate files per person under the `goals/` folder and include:
+- Progress tracking (0-100%)
+- Status indicators (not-started, in-progress, at-risk, completed, abandoned)
+- Key results with targets and current values
+- Check-in history with notes and blockers
+- Automatic at-risk detection based on timeline vs progress
 
 ### Managing People
 
@@ -216,9 +226,10 @@ The dashboard shows:
 - Team member cards with:
   - Role and level
   - Meeting count and last meeting date
-  - Action item completion rate
+  - Open action items count
+  - Pending agenda items with checkboxes
   - Top themes
-  - Quick buttons: New 1:1, Coaching Plan, Edit
+  - Quick buttons: New 1:1, Goals, Coaching Plan, Edit
 - Theme analysis across all meetings
 - Outstanding action items
 
@@ -283,11 +294,15 @@ one-on-one-manager/
 │   ├── types.ts                     # TypeScript interfaces
 │   ├── analyzer.ts                  # Meeting analysis engine
 │   ├── people-manager.ts            # Person profile CRUD operations
+│   ├── goals-manager.ts             # Goals and OKR management
 │   ├── dashboard-view.ts            # Dashboard UI
 │   ├── timeline-view.ts             # Timeline UI
 │   ├── coaching-plan-view.ts        # Coaching plan UI
+│   ├── goals-view.ts                # Goals tracking UI
 │   ├── create-meeting-modal.ts      # Meeting creation modal
 │   ├── person-profile-modal.ts      # Person management modal
+│   ├── goal-modal.ts                # Goal creation/editing modal
+│   ├── agenda-item-modal.ts         # Agenda item creation modal
 │   └── reflection-prompt-modal.ts   # Post-meeting reflection prompt
 ├── styles.css                       # Plugin styles
 ├── manifest.json                    # Plugin metadata

@@ -17,7 +17,6 @@ export class CreateMeetingModal extends Modal {
 	plugin: OneOnOneManager;
 	person: string = '';
 	date: string = '';
-	mood: string = '';
 	topics: string = '';
 	analyzer: MeetingAnalyzer;
 
@@ -64,20 +63,6 @@ export class CreateMeetingModal extends Modal {
 		dateInput.value = this.date;
 		dateInput.addEventListener('input', () => {
 			this.date = dateInput.value;
-		});
-
-		// Mood field
-		const moodDiv = form.createEl('div', {cls: 'form-field'});
-		moodDiv.createEl('label', {text: 'Overall Mood (Optional)'});
-		const moodSelect = moodDiv.createEl('select');
-		moodSelect.createEl('option', {text: '-- Select mood --', value: ''});
-		
-		for (const mood of this.plugin.settings.defaultMoods) {
-			moodSelect.createEl('option', {text: mood, value: mood});
-		}
-		
-		moodSelect.addEventListener('change', () => {
-			this.mood = moodSelect.value;
 		});
 
 		// Topics field
@@ -150,7 +135,7 @@ export class CreateMeetingModal extends Modal {
 			.filter(t => t.length > 0);
 
 		const context = await this.gatherMeetingContext(this.person.trim());
-		const content = this.generateTemplate(this.person.trim(), this.date, this.mood, topicsList, context);
+		const content = this.generateTemplate(this.person.trim(), this.date, topicsList, context);
 
 		try {
 			const folderExists = this.app.vault.getAbstractFileByPath(personFolder);
@@ -230,15 +215,12 @@ export class CreateMeetingModal extends Modal {
 		return coachingPlan.focusAreas.filter(area => area.status === 'active');
 	}
 
-	private generateTemplate(person: string, date: string, mood: string, topics: string[], context: MeetingContext): string {
+	private generateTemplate(person: string, date: string, topics: string[], context: MeetingContext): string {
+		// Start with frontmatter
 		let template = `---
 person: ${person}
 date: ${date}
 `;
-
-		if (mood) {
-			template += `mood: ${mood}\n`;
-		}
 
 		if (topics.length > 0) {
 			template += `topics:\n`;
@@ -247,39 +229,17 @@ date: ${date}
 			}
 		}
 
-		template += `---
+		template += `---\n\n`;
 
-# 💬 1:1 with ${person}
-
-**Date:** ${date}`;
-
-		if (mood) {
-			template += ` | **Mood:** ${mood}`;
-		}
-
+		// Add context information at the top if available
 		if (context.previousMeeting && context.daysSinceLastMeeting !== null) {
-			template += `\n**Last 1:1:** ${context.previousMeeting.date} (${context.daysSinceLastMeeting} days ago)`;
+			template += `*Last 1:1: ${context.previousMeeting.date} (${context.daysSinceLastMeeting} days ago)*\n\n`;
 		}
-
-		template += `
-
----
-
-## 🗣️ Their Agenda
-
-*What they want to talk about today*
-
-
-
----
-
-`;
 
 		// Add context section if we have previous meeting data
 		if (context.incompleteActionItems.length > 0 || context.followUpItems.length > 0) {
-			template += `## 🔄 Follow-up from Last Time
-
-`;
+			template += `## 🔄 Follow-up from Last Time\n\n`;
+			
 			if (context.incompleteActionItems.length > 0) {
 				template += `### Outstanding Action Items\n\n`;
 				for (const item of context.incompleteActionItems) {
@@ -296,132 +256,49 @@ date: ${date}
 				template += `\n`;
 			}
 
-			template += `---
-
-`;
+			template += `---\n\n`;
 		}
 
 		// Add coaching focus areas if they exist
 		if (context.coachingFocusAreas.length > 0) {
-			template += `## 🎯 Your Coaching Topics
-
-*Current focus areas for ${person}*
-
-`;
+			template += `## 🎯 Your Coaching Topics\n\n`;
+			template += `*Current focus areas for ${person}*\n\n`;
+			
 			for (const area of context.coachingFocusAreas) {
 				template += `### ${area.title}\n`;
 				template += `${area.description}\n\n`;
 			}
 
-			template += `---
-
-`;
+			template += `---\n\n`;
 		}
 
-		template += `## 📊 Standing Check-ins
-
-**Workload & Capacity:**
-
-
-**Any Blockers:**
-
-
-**Team Dynamics:**
-
-
----
-
-## 📋 Discussion Points
-
-`;
-
+		// Now insert the user's custom template
+		// Replace template variables
+		let userTemplate = this.plugin.settings.meetingTemplate;
+		userTemplate = userTemplate.replace(/\{\{person\}\}/g, person);
+		userTemplate = userTemplate.replace(/\{\{date\}\}/g, date);
+		
+		// Remove mood conditionals
+		const moodConditional = new RegExp('\\{\\{#if mood\\}\\}[\\s\\S]*?\\{\\{/if\\}\\}', 'g');
+		userTemplate = userTemplate.replace(moodConditional, '');
+		
 		if (topics.length > 0) {
-			for (let i = 0; i < topics.length; i++) {
-				template += `### ${i + 1}. ${topics[i]}
-
-**Notes:**
-
-
-**Key takeaways:**
-
-
-`;
+			let topicsList = '';
+			for (const topic of topics) {
+				topicsList += `  - ${topic}\n`;
 			}
+			const topicsConditional = new RegExp('\\{\\{#if topics\\}\\}topics:\\n\\{\\{#each topics\\}\\}  - \\{\\{this\\}\\}\\n\\{\\{/each\\}\\}\\{\\{/if\\}\\}', 'g');
+			userTemplate = userTemplate.replace(topicsConditional, `topics:\n${topicsList}`);
 		} else {
-			template += `### Topic 1
-
-**Notes:**
-
-
-**Key takeaways:**
-
-
-### Topic 2
-
-**Notes:**
-
-
-**Key takeaways:**
-
-
-`;
+			const topicsConditional = new RegExp('\\{\\{#if topics\\}\\}[\\s\\S]*?\\{\\{/if\\}\\}', 'g');
+			userTemplate = userTemplate.replace(topicsConditional, '');
 		}
 
-		template += `---
+		// Remove the frontmatter from user template since we already added it
+		const frontmatterRegex = new RegExp('^---\\n[\\s\\S]*?\\n---\\n\\n', '');
+		userTemplate = userTemplate.replace(frontmatterRegex, '');
 
-## ✅ Action Items
-
-### Their Commitments
-- [ ]
-
-### My Commitments
-- [ ]
-
----
-
-## 📝 General Notes
-
-
-
----
-
-## 🔄 Follow-up for Next Time
-
--
-
-
----
-
-## 🔒 Private Manager Notes
-
-> **This section is private and just for you**
-
-### 👀 My Observations
-
-
-
-### 🎯 Coaching Notes
-
-**What I want to coach them on:**
-
-
-**Patterns I'm noticing:**
-
-
-### 💭 My Reaction
-
-**How I feel about this conversation:**
-
-
-**Any concerns:**
-
-
-### ✍️ Follow-up Actions for Me
-
-- [ ]
-- [ ]
-
-`;
+		template += userTemplate;
 
 		return template;
 	}

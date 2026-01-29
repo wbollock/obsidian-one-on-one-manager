@@ -5,6 +5,7 @@ import OneOnOneManager from './main';
 import {MeetingAnalyzer} from './analyzer';
 import {PersonProfileModal} from './person-profile-modal';
 import {CreateMeetingModal} from './create-meeting-modal';
+import {AgendaItemModal} from './agenda-item-modal';
 
 export const DASHBOARD_VIEW_TYPE = 'one-on-one-dashboard';
 
@@ -37,6 +38,9 @@ export class DashboardView extends ItemView {
 	async render(): Promise<void> {
 		const container = this.containerEl.children[1];
 		if (!container) return;
+		
+		// Save scroll position
+		const scrollTop = container.scrollTop;
 		
 		container.empty();
 
@@ -84,6 +88,11 @@ export class DashboardView extends ItemView {
 		await this.renderOverview(contentEl, meetings, people);
 		await this.renderPeopleSection(contentEl, people, profiles);
 		await this.renderActionItemsSection(contentEl, meetings);
+		
+		// Restore scroll position
+		setTimeout(() => {
+			container.scrollTop = scrollTop;
+		}, 0);
 	}
 
 	private async renderOverview(container: HTMLElement, meetings: any[], people: string[]): Promise<void> {
@@ -181,59 +190,218 @@ export class DashboardView extends ItemView {
 			lastMeeting.createEl('span', {text: 'Last: '});
 			lastMeeting.createEl('strong', {text: stats.lastMeeting});
 
-			const completion = card.createEl('div', {cls: 'person-stat'});
-			completion.createEl('span', {text: 'Action Items: '});
-			completion.createEl('strong', {text: `${Math.round(stats.actionItemCompletion)}%`});
+		const completion = card.createEl('div', {cls: 'person-stat'});
+		completion.createEl('span', {text: 'Open Action Items: '});
+		completion.createEl('strong', {text: stats.actionItemCompletion.toString()});
 
-			if (stats.commonThemes.size > 0) {
-				const themesDiv = card.createEl('div', {cls: 'person-themes'});
-				const sortedThemes = Array.from(stats.commonThemes.entries())
-					.sort((a, b) => b[1] - a[1])
-					.slice(0, 3);
-				
-				for (const [theme, count] of sortedThemes) {
-					themesDiv.createEl('span', {
-						text: `${theme} (${count})`,
-						cls: 'theme-badge'
+		// Show agenda items
+		if (profile?.agendaItems && profile.agendaItems.length > 0) {
+			const pendingItems = profile.agendaItems.filter((item: any) => !item.completed);
+			if (pendingItems.length > 0) {
+				const agendaSection = card.createEl('div', {cls: 'person-agenda-section'});
+				const agendaHeader = agendaSection.createEl('div', {cls: 'person-agenda-header'});
+				agendaHeader.createEl('span', {text: '📋 Agenda Items', cls: 'person-agenda-title'});
+				agendaHeader.createEl('span', {text: `(${pendingItems.length})`, cls: 'person-agenda-count'});
+
+				const agendaList = agendaSection.createEl('div', {cls: 'person-agenda-list'});
+				for (const item of pendingItems.slice(0, 3)) {
+					const agendaItem = agendaList.createEl('div', {cls: 'person-agenda-item'});
+					
+					const checkbox = agendaItem.createEl('input', {type: 'checkbox'});
+					checkbox.checked = false;
+					checkbox.addEventListener('click', async (e) => {
+						e.stopPropagation();
+						await this.plugin.peopleManager.toggleAgendaItem(person, item.id);
+						// Just remove the item from DOM
+						agendaItem.remove();
+						// Update count
+						const countEl = agendaHeader.querySelector('.person-agenda-count');
+						if (countEl) {
+							const newCount = pendingItems.length - 1;
+							countEl.textContent = `(${newCount})`;
+							if (newCount === 0) {
+								agendaSection.remove();
+							}
+						}
+					});
+					
+					const text = agendaItem.createEl('span', {text: item.text, cls: 'person-agenda-text'});
+					if (item.priority === 'high') {
+						text.style.fontWeight = '600';
+						text.style.color = 'var(--text-error)';
+					}
+					
+					const deleteBtn = agendaItem.createEl('button', {
+						text: '×',
+						cls: 'person-agenda-delete'
+					});
+					deleteBtn.addEventListener('click', async (e) => {
+						e.stopPropagation();
+						await this.plugin.peopleManager.removeAgendaItem(person, item.id);
+						// Just remove the item from DOM
+						agendaItem.remove();
+						// Update count
+						const countEl = agendaHeader.querySelector('.person-agenda-count');
+						if (countEl) {
+							const newCount = pendingItems.length - 1;
+							countEl.textContent = `(${newCount})`;
+							if (newCount === 0) {
+								agendaSection.remove();
+							}
+						}
+					});
+				}
+
+				if (pendingItems.length > 3) {
+					agendaSection.createEl('div', {
+						text: `... and ${pendingItems.length - 3} more`,
+						cls: 'person-agenda-more'
 					});
 				}
 			}
+		}
 
-			const actionsDiv = card.createEl('div', {cls: 'person-actions'});
-			
-			const create11Btn = actionsDiv.createEl('button', {
-				text: '+ New 1:1',
-				cls: 'person-action-btn'
-			});
-			create11Btn.addEventListener('click', (e) => {
-				e.stopPropagation();
-				const modal = new CreateMeetingModal(this.app, this.plugin);
-				modal.person = person;
-				modal.open();
-			});
+		const actionsDiv = card.createEl('div', {cls: 'person-actions'});
+		
+		const addAgendaBtn = actionsDiv.createEl('button', {
+			text: '+ Agenda',
+			cls: 'person-action-btn-small',
+			attr: {title: 'Add agenda item'}
+		});
+		addAgendaBtn.addEventListener('click', (e) => {
+			e.stopPropagation();
+			new AgendaItemModal(this.app, this.plugin, person, async (newItem) => {
+				// Dynamically add the new item to the card without refreshing
+				let agendaSection = card.querySelector('.person-agenda-section') as HTMLElement;
+				
+				if (!agendaSection) {
+					// Create agenda section if it doesn't exist
+					agendaSection = card.createEl('div', {cls: 'person-agenda-section'});
+					const agendaHeader = agendaSection.createEl('div', {cls: 'person-agenda-header'});
+					agendaHeader.createEl('span', {text: '📋 Agenda Items', cls: 'person-agenda-title'});
+					agendaHeader.createEl('span', {text: '(1)', cls: 'person-agenda-count'});
+					agendaSection.createEl('div', {cls: 'person-agenda-list'});
+					
+					// Insert before actions div
+					card.insertBefore(agendaSection, actionsDiv);
+				} else {
+					// Update count
+					const countEl = agendaSection.querySelector('.person-agenda-count');
+					if (countEl) {
+						const currentCount = parseInt(countEl.textContent?.replace(/[()]/g, '') || '0');
+						countEl.textContent = `(${currentCount + 1})`;
+					}
+				}
+				
+				// Add the new item to the list
+				const agendaList = agendaSection.querySelector('.person-agenda-list');
+				if (agendaList) {
+					const agendaItem = agendaList.createEl('div', {cls: 'person-agenda-item'});
+					
+					const checkbox = agendaItem.createEl('input', {type: 'checkbox'});
+					checkbox.checked = false;
+					checkbox.addEventListener('click', async (clickE) => {
+						clickE.stopPropagation();
+						await this.plugin.peopleManager.toggleAgendaItem(person, newItem.id);
+						agendaItem.remove();
+						const countEl = agendaSection.querySelector('.person-agenda-count');
+						if (countEl) {
+							const currentCount = parseInt(countEl.textContent?.replace(/[()]/g, '') || '0');
+							const newCount = currentCount - 1;
+							countEl.textContent = `(${newCount})`;
+							if (newCount === 0) {
+								agendaSection.remove();
+							}
+						}
+					});
+					
+					const text = agendaItem.createEl('span', {text: newItem.text, cls: 'person-agenda-text'});
+					if (newItem.priority === 'high') {
+						text.style.fontWeight = '600';
+						text.style.color = 'var(--text-error)';
+					}
+					
+					const deleteBtn = agendaItem.createEl('button', {
+						text: '×',
+						cls: 'person-agenda-delete'
+					});
+					deleteBtn.addEventListener('click', async (clickE) => {
+						clickE.stopPropagation();
+						await this.plugin.peopleManager.removeAgendaItem(person, newItem.id);
+						agendaItem.remove();
+						const countEl = agendaSection.querySelector('.person-agenda-count');
+						if (countEl) {
+							const currentCount = parseInt(countEl.textContent?.replace(/[()]/g, '') || '0');
+							const newCount = currentCount - 1;
+							countEl.textContent = `(${newCount})`;
+							if (newCount === 0) {
+								agendaSection.remove();
+							}
+						}
+					});
+				}
+			}).open();
+		});
+		
+		const create11Btn = actionsDiv.createEl('button', {
+			text: '+ New 1:1',
+			cls: 'person-action-btn'
+		});
+		create11Btn.addEventListener('click', (e) => {
+			e.stopPropagation();
+			const modal = new CreateMeetingModal(this.app, this.plugin);
+			modal.person = person;
+			modal.open();
+		});
 
-			const coachingBtn = actionsDiv.createEl('button', {
-				text: '📋 Plan',
-				cls: 'person-action-btn-small',
-				attr: {title: 'View coaching plan'}
-			});
-			coachingBtn.addEventListener('click', async (e) => {
-				e.stopPropagation();
-				await this.plugin.openCoachingPlanView(person);
-			});
+		const goalsBtn = actionsDiv.createEl('button', {
+			text: '🎯 Goals',
+			cls: 'person-action-btn-small',
+			attr: {title: 'View goals'}
+		});
+		goalsBtn.addEventListener('click', async (e) => {
+			e.stopPropagation();
+			await this.plugin.openGoalsView(person);
+		});
 
-			const editBtn = actionsDiv.createEl('button', {
-				text: '✏️',
-				cls: 'person-action-btn-small',
-				attr: {title: 'Edit profile'}
-			});
-			editBtn.addEventListener('click', async (e) => {
-				e.stopPropagation();
-				new PersonProfileModal(this.app, this.plugin, profile, async (updatedProfile) => {
-					await this.plugin.peopleManager.savePersonProfile(updatedProfile);
-					await this.render();
-				}).open();
-			});
+		const editBtn = actionsDiv.createEl('button', {
+			text: 'Edit',
+			cls: 'person-action-btn-small',
+			attr: {title: 'Edit profile'}
+		});
+		editBtn.addEventListener('click', async (e) => {
+			e.stopPropagation();
+			new PersonProfileModal(this.app, this.plugin, profile, async (updatedProfile) => {
+				await this.plugin.peopleManager.savePersonProfile(updatedProfile);
+				// Just update the role/level display in the card
+				const roleEl = card.querySelector('.person-role');
+				if (roleEl) {
+					roleEl.empty();
+					if (updatedProfile.role) {
+						roleEl.createEl('span', {text: updatedProfile.role});
+						if (updatedProfile.level) {
+							roleEl.createEl('span', {text: ` (${updatedProfile.level})`, cls: 'person-level'});
+						}
+					}
+				}
+			}).open();
+		});
+
+		const deleteBtn = actionsDiv.createEl('button', {
+			text: 'Delete',
+			cls: 'person-action-btn-small person-action-btn-delete',
+			attr: {title: 'Delete person'}
+		});
+		deleteBtn.addEventListener('click', async (e) => {
+			e.stopPropagation();
+			const confirmed = confirm(`Are you sure you want to delete ${person}? This will only remove the profile, not the 1:1 meeting notes.`);
+			if (confirmed) {
+				await this.plugin.peopleManager.deletePersonProfile(person);
+				new Notice(`Deleted ${person}`);
+				// Just remove the card from DOM
+				card.remove();
+			}
+		});
 
 			card.addEventListener('click', () => {
 				this.plugin.openTimelineView(person);
