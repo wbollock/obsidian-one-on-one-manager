@@ -25,6 +25,7 @@ build/
 
 # Obsidian
 data.json
+.obsidian/
 
 # OS files
 .DS_Store
