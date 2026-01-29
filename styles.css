@@ -25,7 +25,7 @@
 .dashboard-action-btn {
 	padding: 8px 16px;
 	background: var(--interactive-accent);
-	color: rgba(0, 0, 0, 0.85) !important;
+	color: var(--text-on-accent);
 	border: none;
 	border-radius: 6px;
 	cursor: pointer;
@@ -149,7 +149,7 @@
 .person-action-btn {
 	padding: 6px 12px;
 	background: var(--interactive-accent);
-	color: rgba(0, 0, 0, 0.85) !important;
+	color: var(--text-on-accent);
 	border: none;
 	border-radius: 4px;
 	cursor: pointer;
@@ -167,7 +167,7 @@
 .person-action-btn-small {
 	padding: 6px 10px;
 	background: var(--interactive-accent);
-	color: rgba(0, 0, 0, 0.85) !important;
+	color: var(--text-on-accent);
 	border: none;
 	border-radius: 4px;
 	cursor: pointer;
@@ -249,7 +249,7 @@
 .person-agenda-delete {
 	background: var(--interactive-accent);
 	border: none;
-	color: rgba(0, 0, 0, 0.85) !important;
+	color: var(--text-on-accent);
 	cursor: pointer;
 	padding: 2px 8px;
 	font-size: 1.2em;
@@ -284,7 +284,7 @@
 .theme-badge {
 	display: inline-block;
 	background: var(--interactive-accent);
-	color: rgba(0, 0, 0, 0.85) !important;
+	color: var(--text-on-accent);
 	padding: 3px 8px;
 	border-radius: 12px;
 	font-size: 0.8em;
@@ -404,7 +404,7 @@
 	align-items: center;
 	gap: 8px;
 	background: var(--interactive-accent);
-	color: rgba(0, 0, 0, 0.85);
+	color: var(--text-on-accent);
 	padding: 8px 12px;
 	border-radius: 16px;
 	font-size: 0.9em;
@@ -629,13 +629,13 @@
 	font-size: 0.95em;
 	transition: all 0.2s;
 	background: var(--interactive-accent);
-	color: rgba(0, 0, 0, 0.85) !important;
+	color: var(--text-on-accent);
 }
 
 .form-buttons button[type="submit"],
 .reflection-primary-btn {
 	background: var(--interactive-accent);
-	color: rgba(0, 0, 0, 0.85) !important;
+	color: var(--text-on-accent);
 }
 
 .form-buttons button[type="submit"]:hover,
@@ -647,7 +647,7 @@
 
 .form-buttons button[type="button"] {
 	background: var(--interactive-accent);
-	color: rgba(0, 0, 0, 0.85) !important;
+	color: var(--text-on-accent);
 	border: none;
 	font-weight: 600;
 }
@@ -702,7 +702,7 @@
 .coaching-action-btn {
 	padding: 8px 16px;
 	background: var(--interactive-accent);
-	color: rgba(0, 0, 0, 0.85) !important;
+	color: var(--text-on-accent);
 	border: none;
 	border-radius: 6px;
 	cursor: pointer;
@@ -873,7 +873,7 @@
 
 .badge-active {
 	background: var(--interactive-accent);
-	color: rgba(0, 0, 0, 0.85);
+	color: var(--text-on-accent);
 	font-weight: 600;
 }
 
@@ -975,7 +975,7 @@
 
 .topic-count-badge {
 	background: var(--interactive-accent);
-	color: rgba(0, 0, 0, 0.85);
+	color: var(--text-on-accent);
 	padding: 3px 10px;
 	border-radius: 12px;
 	font-size: 0.85em;
@@ -1080,7 +1080,7 @@
 .year-selector {
 	padding: 10px 18px;
 	background: var(--interactive-accent);
-	color: rgba(0, 0, 0, 0.85) !important;
+	color: var(--text-on-accent);
 	border: none;
 	border-radius: 6px;
 	font-weight: 700;
@@ -1207,7 +1207,7 @@
 	font-size: 0.85em;
 	font-weight: 600;
 	background: var(--interactive-accent);
-	color: rgba(0, 0, 0, 0.85);
+	color: var(--text-on-accent);
 }
 
 .goal-progress-section {
@@ -1347,7 +1347,7 @@
 .goal-action-btn {
 	padding: 8px 14px;
 	background: var(--interactive-accent);
-	color: rgba(0, 0, 0, 0.85) !important;
+	color: var(--text-on-accent);
 	border: none;
 	border-radius: 6px;
 	cursor: pointer;
@@ -1509,7 +1509,7 @@
 .add-key-result-btn {
 	padding: 10px 16px;
 	background: var(--interactive-accent);
-	color: rgba(0, 0, 0, 0.85) !important;
+	color: var(--text-on-accent);
 	border: none;
 	border-radius: 6px;
 	cursor: pointer;
@@ -1610,7 +1610,7 @@
 
 .modal-button-container .mod-cta {
 	background: var(--interactive-accent);
-	color: rgba(0, 0, 0, 0.85) !important;
+	color: var(--text-on-accent);
 }
 
 .modal-button-container .mod-cta:hover {
@@ -1642,7 +1642,7 @@
 
 .template-buttons .mod-cta {
 	background: var(--interactive-accent);
-	color: rgba(0, 0, 0, 0.85) !important;
+	color: var(--text-on-accent);
 }
 
 .template-buttons .mod-cta:hover {

@@ -34,9 +34,26 @@ export class PersonProfileModal extends Modal {
 
 		const form = contentEl.createEl('form');
 
-		this.createField(form, 'Name *', 'text', this.profile.name || '', (value) => {
-			this.profile.name = value;
-		}, 'Full name');
+		// Name field - read-only when editing
+		if (this.isNew) {
+			this.createField(form, 'Name *', 'text', this.profile.name || '', (value) => {
+				this.profile.name = value;
+			}, 'Full name');
+		} else {
+			// Display name as read-only when editing
+			const nameDiv = form.createEl('div', {cls: 'form-field'});
+			nameDiv.createEl('label', {text: 'Name'});
+			const nameInput = nameDiv.createEl('input', {
+				type: 'text',
+				attr: {
+					readonly: 'readonly',
+					disabled: 'disabled'
+				}
+			});
+			nameInput.value = this.profile.name;
+			nameInput.style.backgroundColor = 'var(--background-secondary)';
+			nameInput.style.cursor = 'not-allowed';
+		}
 
 		this.createField(form, 'Role', 'text', this.profile.role || '', (value) => {
 			this.profile.role = value;
@@ -111,7 +128,7 @@ export class PersonProfileModal extends Modal {
 		}
 
 		try {
-			this.onSave(this.profile);
+			await this.onSave(this.profile);
 			new Notice(`${this.isNew ? 'Added' : 'Updated'} ${this.profile.name}`);
 			this.close();
 		} catch (error) {

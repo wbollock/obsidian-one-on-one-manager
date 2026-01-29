@@ -57,8 +57,16 @@ export class DashboardView extends ItemView {
 		});
 		addPersonBtn.addEventListener('click', () => {
 			new PersonProfileModal(this.app, this.plugin, null, async (profile) => {
-				await this.plugin.peopleManager.savePersonProfile(profile);
-				await this.render();
+				try {
+					await this.plugin.peopleManager.savePersonProfile(profile);
+					// Small delay to ensure file system and cache are updated
+					await new Promise(resolve => setTimeout(resolve, 100));
+					await this.render();
+					new Notice(`✓ Added ${profile.name}`);
+				} catch (error) {
+					console.error('Error adding person:', error);
+					new Notice('❌ Error adding person');
+				}
 			}).open();
 		});
 
@@ -159,8 +167,16 @@ export class DashboardView extends ItemView {
 			});
 			addPersonBtn.addEventListener('click', () => {
 				new PersonProfileModal(this.app, this.plugin, null, async (profile) => {
-					await this.plugin.peopleManager.savePersonProfile(profile);
-					await this.render();
+					try {
+						await this.plugin.peopleManager.savePersonProfile(profile);
+						// Small delay to ensure file system and cache are updated
+						await new Promise(resolve => setTimeout(resolve, 100));
+						await this.render();
+						new Notice(`✓ Added ${profile.name}`);
+					} catch (error) {
+						console.error('Error adding person:', error);
+						new Notice('❌ Error adding person');
+					}
 				}).open();
 			});
 			
@@ -169,7 +185,12 @@ export class DashboardView extends ItemView {
 				cls: 'dashboard-action-btn'
 			});
 			createMeetingBtn.addEventListener('click', () => {
-				new CreateMeetingModal(this.app, this.plugin).open();
+				const modal = new CreateMeetingModal(this.app, this.plugin, async () => {
+					// Refresh dashboard before navigating to the new meeting note
+					await new Promise(resolve => setTimeout(resolve, 100));
+					await this.render();
+				});
+				modal.open();
 			});
 			
 			return;
@@ -277,8 +298,23 @@ export class DashboardView extends ItemView {
 
 		const actionsDiv = card.createEl('div', {cls: 'person-actions'});
 		
+		const create11Btn = actionsDiv.createEl('button', {
+			text: '+ New 1:1',
+			cls: 'person-action-btn'
+		});
+		create11Btn.addEventListener('click', (e) => {
+			e.stopPropagation();
+			const modal = new CreateMeetingModal(this.app, this.plugin, async () => {
+				// Refresh dashboard before navigating to the new meeting note
+				await new Promise(resolve => setTimeout(resolve, 100));
+				await this.render();
+			});
+			modal.person = person;
+			modal.open();
+		});
+
 		const addAgendaBtn = actionsDiv.createEl('button', {
-			text: '+ Agenda',
+			text: '+ Agenda Item',
 			cls: 'person-action-btn-small',
 			attr: {title: 'Add agenda item'}
 		});
@@ -357,16 +393,6 @@ export class DashboardView extends ItemView {
 			}).open();
 		});
 		
-		const create11Btn = actionsDiv.createEl('button', {
-			text: '+ New 1:1',
-			cls: 'person-action-btn'
-		});
-		create11Btn.addEventListener('click', (e) => {
-			e.stopPropagation();
-			const modal = new CreateMeetingModal(this.app, this.plugin);
-			modal.person = person;
-			modal.open();
-		});
 
 		const goalsBtn = actionsDiv.createEl('button', {
 			text: '🎯 Goals',
@@ -387,17 +413,8 @@ export class DashboardView extends ItemView {
 			e.stopPropagation();
 			new PersonProfileModal(this.app, this.plugin, profile, async (updatedProfile) => {
 				await this.plugin.peopleManager.savePersonProfile(updatedProfile);
-				// Just update the role/level display in the card
-				const roleEl = card.querySelector('.person-role');
-				if (roleEl) {
-					roleEl.empty();
-					if (updatedProfile.role) {
-						roleEl.createEl('span', {text: updatedProfile.role});
-						if (updatedProfile.level) {
-							roleEl.createEl('span', {text: ` (${updatedProfile.level})`, cls: 'person-level'});
-						}
-					}
-				}
+				await new Promise(resolve => setTimeout(resolve, 100));
+				await this.render();
 			}).open();
 		});
 
@@ -412,8 +429,7 @@ export class DashboardView extends ItemView {
 			if (confirmed) {
 				await this.plugin.peopleManager.deletePersonProfile(person);
 				new Notice(`Deleted ${person}`);
-				// Just remove the card from DOM
-				card.remove();
+				await this.render();
 			}
 		});
 

@@ -83,6 +83,7 @@ export class GoalsView extends ItemView {
 		});
 		addGoalBtn.addEventListener('click', () => {
 			new GoalModal(this.app, this.plugin, this.person, null, async () => {
+				await new Promise(resolve => setTimeout(resolve, 100));
 				await this.render();
 			}).open();
 		});
@@ -238,6 +239,7 @@ export class GoalsView extends ItemView {
 		const editBtn = actions.createEl('button', {text: '✏️ Edit', cls: 'goal-action-btn'});
 		editBtn.addEventListener('click', () => {
 			new GoalModal(this.app, this.plugin, this.person, goal, async () => {
+				await new Promise(resolve => setTimeout(resolve, 100));
 				await this.render();
 			}).open();
 		});

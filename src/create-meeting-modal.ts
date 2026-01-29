@@ -18,11 +18,13 @@ export class CreateMeetingModal extends Modal {
 	date: string = '';
 	topics: string = '';
 	analyzer: MeetingAnalyzer;
+	onMeetingCreated?: () => void | Promise<void>;
 
-	constructor(app: App, plugin: OneOnOneManager) {
+	constructor(app: App, plugin: OneOnOneManager, onMeetingCreated?: () => void | Promise<void>) {
 		super(app);
 		this.plugin = plugin;
 		this.analyzer = new MeetingAnalyzer(this.app, plugin.settings);
+		this.onMeetingCreated = onMeetingCreated;
 
 		const today = new Date();
 		this.date = today.toISOString().split('T')[0] || '';
@@ -143,6 +145,12 @@ export class CreateMeetingModal extends Modal {
 			}
 
 			const file = await this.app.vault.create(filePath, content);
+			
+			// Call the callback before navigating away
+			if (this.onMeetingCreated) {
+				await this.onMeetingCreated();
+			}
+			
 			await this.app.workspace.openLinkText(file.path, '', false);
 
 			new Notice(`✅ 1:1 note created for ${this.person}`, 3000);

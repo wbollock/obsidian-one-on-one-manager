@@ -10,7 +10,7 @@ export class GoalModal extends Modal {
 	goalsManager: GoalsManager;
 	goal: Goal | null;
 	person: string;
-	onSave: (goal: Goal) => void;
+	onSave: (goal: Goal) => void | Promise<void>;
 
 	// Form fields
 	title: string = '';
@@ -22,7 +22,7 @@ export class GoalModal extends Modal {
 	targetDate: string = '';
 	keyResults: KeyResult[] = [];
 
-	constructor(app: App, plugin: OneOnOneManager, person: string, goal: Goal | null, onSave: (goal: Goal) => void) {
+	constructor(app: App, plugin: OneOnOneManager, person: string, goal: Goal | null, onSave: (goal: Goal) => void | Promise<void>) {
 		super(app);
 		this.plugin = plugin;
 		this.goalsManager = new GoalsManager(app, plugin.settings);
@@ -327,7 +327,7 @@ export class GoalModal extends Modal {
 
 		try {
 			await this.goalsManager.saveGoal(this.person, goal);
-			this.onSave(goal);
+			await this.onSave(goal);
 			this.close();
 		} catch (error) {
 			const message = error instanceof Error ? error.message : 'Unknown error';
