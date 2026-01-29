@@ -1,5 +1,5 @@
 // ABOUTME: Modal for creating and editing person profiles
-// ABOUTME: Manages direct report information including role, level, and contact details
+// ABOUTME: Manages direct report information including role, level, and team
 import {App, Modal, Notice} from 'obsidian';
 import OneOnOneManager from './main';
 import {PersonProfile} from './types';
@@ -21,8 +21,6 @@ export class PersonProfileModal extends Modal {
 			team: '',
 			reportsTo: '',
 			startDate: '',
-			email: '',
-			slackHandle: '',
 			notes: ''
 		};
 		this.onSave = onSave;
@@ -59,14 +57,6 @@ export class PersonProfileModal extends Modal {
 		this.createField(form, 'Start Date', 'date', this.profile.startDate || '', (value) => {
 			this.profile.startDate = value;
 		});
-
-		this.createField(form, 'Email', 'email', this.profile.email || '', (value) => {
-			this.profile.email = value;
-		});
-
-		this.createField(form, 'Slack Handle', 'text', this.profile.slackHandle || '', (value) => {
-			this.profile.slackHandle = value;
-		}, '@username');
 
 		const notesDiv = form.createEl('div', {cls: 'form-field'});
 		notesDiv.createEl('label', {text: 'Notes'});

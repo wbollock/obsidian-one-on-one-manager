@@ -247,9 +247,9 @@
 }
 
 .person-agenda-delete {
-	background: var(--background-modifier-border);
+	background: var(--interactive-accent);
 	border: none;
-	color: var(--text-normal);
+	color: rgba(0, 0, 0, 0.85) !important;
 	cursor: pointer;
 	padding: 2px 8px;
 	font-size: 1.2em;
@@ -262,7 +262,7 @@
 
 .person-agenda-delete:hover {
 	background: var(--text-error);
-	color: white;
+	color: white !important;
 }
 
 .person-agenda-more {

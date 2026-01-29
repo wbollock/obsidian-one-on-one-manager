@@ -36,8 +36,6 @@ export class PeopleManager {
 				team: fm.team,
 				reportsTo: fm.reportsTo,
 				startDate: fm.startDate,
-				email: fm.email,
-				slackHandle: fm.slackHandle,
 				notes: fm.notes,
 				agendaItems: fm.agendaItems || []
 			};
@@ -80,8 +78,6 @@ export class PeopleManager {
 		if (profile.team) content += `team: ${profile.team}\n`;
 		if (profile.reportsTo) content += `reportsTo: ${profile.reportsTo}\n`;
 		if (profile.startDate) content += `startDate: ${profile.startDate}\n`;
-		if (profile.email) content += `email: ${profile.email}\n`;
-		if (profile.slackHandle) content += `slackHandle: ${profile.slackHandle}\n`;
 		if (profile.agendaItems && profile.agendaItems.length > 0) {
 			content += 'agendaItems:\n';
 			for (const item of profile.agendaItems) {

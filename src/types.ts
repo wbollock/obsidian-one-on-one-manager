@@ -33,8 +33,6 @@ export interface PersonProfile {
 	team?: string;
 	reportsTo?: string;
 	startDate?: string;
-	email?: string;
-	slackHandle?: string;
 	notes?: string;
 	agendaItems?: AgendaItem[];
 }
