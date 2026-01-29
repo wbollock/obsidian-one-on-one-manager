@@ -3,14 +3,13 @@
 import {App, Modal, Notice, TFile} from 'obsidian';
 import OneOnOneManager from './main';
 import {MeetingAnalyzer} from './analyzer';
-import {OneOnOneMeeting, FocusArea} from './types';
+import {OneOnOneMeeting} from './types';
 
 interface MeetingContext {
 	previousMeeting: OneOnOneMeeting | null;
 	daysSinceLastMeeting: number | null;
 	incompleteActionItems: string[];
 	followUpItems: string[];
-	coachingFocusAreas: FocusArea[];
 }
 
 export class CreateMeetingModal extends Modal {
@@ -35,9 +34,9 @@ export class CreateMeetingModal extends Modal {
 		contentEl.addClass('one-on-one-modal');
 
 		contentEl.createEl('h2', {text: 'Create 1:1 Meeting Note'});
-		
+
 		const description = contentEl.createEl('p', {cls: 'modal-description'});
-		description.setText('Create a new 1:1 meeting note with structured sections for discussion points, action items, and private coaching notes.');
+		description.setText('Create a new 1:1 meeting note with structured sections for discussion points, action items, and private notes.');
 
 		const form = contentEl.createEl('form');
 
@@ -135,7 +134,7 @@ export class CreateMeetingModal extends Modal {
 			.filter(t => t.length > 0);
 
 		const context = await this.gatherMeetingContext(this.person.trim());
-		const content = this.generateTemplate(this.person.trim(), this.date, topicsList, context);
+		const content = await this.generateTemplate(this.person.trim(), this.date, topicsList, context);
 
 		try {
 			const folderExists = this.app.vault.getAbstractFileByPath(personFolder);
@@ -174,14 +173,11 @@ export class CreateMeetingModal extends Modal {
 			followUpItems = this.extractFollowUpItems(previousMeeting.content);
 		}
 
-		const coachingFocusAreas = await this.getCoachingFocusAreas(person);
-
 		return {
 			previousMeeting,
 			daysSinceLastMeeting,
 			incompleteActionItems,
-			followUpItems,
-			coachingFocusAreas
+			followUpItems
 		};
 	}
 
@@ -208,14 +204,28 @@ export class CreateMeetingModal extends Modal {
 		return items;
 	}
 
-	private async getCoachingFocusAreas(person: string): Promise<FocusArea[]> {
-		const coachingPlan = await this.plugin.peopleManager.getCoachingPlan(person);
-		if (!coachingPlan) return [];
+	private async loadTemplateFromFile(): Promise<string> {
+		const templatePath = `${this.plugin.settings.oneOnOneFolder}/templates/meeting-template.md`;
+		const templateFile = this.app.vault.getAbstractFileByPath(templatePath);
 
-		return coachingPlan.focusAreas.filter(area => area.status === 'active');
+		if (!templateFile || !(templateFile instanceof TFile)) {
+			return this.plugin.settings.meetingTemplate;
+		}
+
+		try {
+			const content = await this.app.vault.read(templateFile);
+			const match = content.match(/---\n\n([\s\S]*?)\n\n---/);
+			if (match && match[1]) {
+				return match[1];
+			}
+		} catch (error) {
+			console.log('Could not read template file, using settings:', error);
+		}
+
+		return this.plugin.settings.meetingTemplate;
 	}
 
-	private generateTemplate(person: string, date: string, topics: string[], context: MeetingContext): string {
+	private async generateTemplate(person: string, date: string, topics: string[], context: MeetingContext): Promise<string> {
 		// Start with frontmatter
 		let template = `---
 person: ${person}
@@ -259,22 +269,9 @@ date: ${date}
 			template += `---\n\n`;
 		}
 
-		// Add coaching focus areas if they exist
-		if (context.coachingFocusAreas.length > 0) {
-			template += `## 🎯 Your Coaching Topics\n\n`;
-			template += `*Current focus areas for ${person}*\n\n`;
-			
-			for (const area of context.coachingFocusAreas) {
-				template += `### ${area.title}\n`;
-				template += `${area.description}\n\n`;
-			}
-
-			template += `---\n\n`;
-		}
-
 		// Now insert the user's custom template
-		// Replace template variables
-		let userTemplate = this.plugin.settings.meetingTemplate;
+		// Try to load from template file first, otherwise use settings
+		let userTemplate = await this.loadTemplateFromFile();
 		userTemplate = userTemplate.replace(/\{\{person\}\}/g, person);
 		userTemplate = userTemplate.replace(/\{\{date\}\}/g, date);
 		

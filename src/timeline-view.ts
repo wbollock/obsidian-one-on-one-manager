@@ -1,5 +1,5 @@
 // ABOUTME: Timeline view showing meeting history for a specific person
-// ABOUTME: Chronological display of all 1:1s with themes and action items
+// ABOUTME: Chronological display of all 1:1s with action items
 import {ItemView, WorkspaceLeaf} from 'obsidian';
 import OneOnOneManager from './main';
 import {MeetingAnalyzer} from './analyzer';
@@ -59,27 +59,12 @@ export class TimelineView extends ItemView {
 
 	private async renderStats(container: HTMLElement, stats: any): Promise<void> {
 		const section = container.createEl('div', {cls: 'timeline-stats'});
-		
+
 		const grid = section.createEl('div', {cls: 'stats-grid'});
-		
+
 		this.createStatCard(grid, 'Total Meetings', stats.meetingCount.toString(), '📅');
 		this.createStatCard(grid, 'Last Meeting', stats.lastMeeting, '🕐');
 		this.createStatCard(grid, 'Action Items Done', `${Math.round(stats.actionItemCompletion)}%`, '✓');
-
-		if (stats.commonThemes.size > 0) {
-			const themesSection = section.createEl('div', {cls: 'timeline-themes'});
-			themesSection.createEl('h3', {text: 'Common Themes'});
-			
-			const themesGrid = themesSection.createEl('div', {cls: 'themes-grid'});
-			const sortedThemes: [string, number][] = (Array.from(stats.commonThemes.entries()) as [string, number][])
-				.sort((a: [string, number], b: [string, number]) => b[1] - a[1]);
-			
-			for (const [theme, count] of sortedThemes) {
-				const badge = themesGrid.createEl('span', {cls: 'theme-badge-large'});
-				badge.createEl('span', {text: theme, cls: 'theme-name'});
-				badge.createEl('span', {text: count.toString(), cls: 'theme-count'});
-			}
-		}
 	}
 
 	private createStatCard(container: HTMLElement, label: string, value: string, icon: string): void {
@@ -122,13 +107,6 @@ export class TimelineView extends ItemView {
 				const topicsDiv = content.createEl('div', {cls: 'meeting-topics'});
 				topicsDiv.createEl('strong', {text: 'Topics: '});
 				topicsDiv.createEl('span', {text: meeting.topics.join(', ')});
-			}
-
-			if (meeting.themes.length > 0) {
-				const themesDiv = content.createEl('div', {cls: 'meeting-themes'});
-				for (const theme of meeting.themes) {
-					themesDiv.createEl('span', {text: theme, cls: 'theme-badge'});
-				}
 			}
 
 			if (meeting.actionItems.length > 0) {

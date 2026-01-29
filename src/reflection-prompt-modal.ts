@@ -74,15 +74,6 @@ export class ReflectionPromptModal extends Modal {
 			this.close();
 		});
 
-		const viewCoachingBtn = buttonDiv.createEl('button', {
-			text: 'View Coaching Plan',
-			type: 'button'
-		});
-		viewCoachingBtn.addEventListener('click', async () => {
-			await this.plugin.openCoachingPlanView(this.person);
-			this.close();
-		});
-
 		const laterBtn = buttonDiv.createEl('button', {
 			text: 'Skip for Now',
 			type: 'button'

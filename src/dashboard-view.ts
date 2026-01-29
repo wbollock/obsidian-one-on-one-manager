@@ -1,5 +1,5 @@
 // ABOUTME: Dashboard view showing 1:1 analytics and visualizations
-// ABOUTME: Displays meeting frequency, themes, action items, and mood trends
+// ABOUTME: Displays meeting frequency, action items, and mood trends
 import {ItemView, WorkspaceLeaf, Notice} from 'obsidian';
 import OneOnOneManager from './main';
 import {MeetingAnalyzer} from './analyzer';
@@ -77,8 +77,12 @@ export class DashboardView extends ItemView {
 			attr: {title: 'Edit the template used for all future 1:1 meetings'}
 		});
 		editTemplateBtn.addEventListener('click', async () => {
-			await this.plugin.settingTab.openTemplateInNote();
-			new Notice('Template opened for editing. Save and use "Load from Note" in settings to apply changes.');
+			try {
+				await this.plugin.settingTab.openTemplateInNote();
+			} catch (error) {
+				console.error('Error opening template from dashboard:', error);
+				new Notice('❌ Error opening template. Check console for details.');
+			}
 		});
 
 		const meetings = await this.analyzer.getAllMeetings();
@@ -416,36 +420,6 @@ export class DashboardView extends ItemView {
 			card.addEventListener('click', () => {
 				this.plugin.openTimelineView(person);
 			});
-		}
-	}
-
-	private async renderThemesSection(container: HTMLElement, meetings: any[]): Promise<void> {
-		const section = container.createEl('div', {cls: 'dashboard-section'});
-		section.createEl('h2', {text: 'Common Themes'});
-
-		const themeCount = new Map<string, number>();
-		for (const meeting of meetings) {
-			for (const theme of meeting.themes) {
-				themeCount.set(theme, (themeCount.get(theme) || 0) + 1);
-			}
-		}
-
-		const sorted = Array.from(themeCount.entries()).sort((a, b) => b[1] - a[1]);
-		
-		const chart = section.createEl('div', {cls: 'bar-chart'});
-		const maxCount = sorted[0]?.[1] || 1;
-
-		for (const [theme, count] of sorted) {
-			const bar = chart.createEl('div', {cls: 'bar-item'});
-			const percentage = (count / maxCount) * 100;
-			
-			bar.createEl('div', {text: theme, cls: 'bar-label'});
-			const barContainer = bar.createEl('div', {cls: 'bar-container'});
-			barContainer.createEl('div', {
-				cls: 'bar-fill',
-				attr: {style: `width: ${percentage}%`}
-			});
-			bar.createEl('div', {text: count.toString(), cls: 'bar-count'});
 		}
 	}
 

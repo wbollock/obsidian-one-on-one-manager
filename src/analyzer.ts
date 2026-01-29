@@ -1,5 +1,5 @@
 // ABOUTME: Service for analyzing 1:1 meeting notes
-// ABOUTME: Extracts themes, action items, and metadata from markdown files
+// ABOUTME: Extracts action items and metadata from markdown files
 import {App, TFile, moment} from 'obsidian';
 import {OneOnOneMeeting, ActionItem, PersonStats} from './types';
 import {OneOnOneSettings} from './settings';
@@ -55,7 +55,6 @@ export class MeetingAnalyzer {
 		const mood = frontmatter.mood;
 		const topics = this.parseTopics(frontmatter.topics);
 
-		const themes = this.extractThemes(content);
 		const actionItems = this.extractActionItems(content);
 
 		return {
@@ -63,7 +62,6 @@ export class MeetingAnalyzer {
 			date,
 			mood,
 			topics,
-			themes,
 			actionItems,
 			filePath: file.path,
 			content
@@ -74,22 +72,6 @@ export class MeetingAnalyzer {
 		if (Array.isArray(topics)) return topics;
 		if (typeof topics === 'string') return topics.split(',').map(t => t.trim());
 		return [];
-	}
-
-	extractThemes(content: string): string[] {
-		const themes = new Set<string>();
-		const lowerContent = content.toLowerCase();
-
-		for (const [theme, keywords] of Object.entries(this.settings.themeKeywords)) {
-			for (const keyword of keywords) {
-				if (lowerContent.includes(keyword.toLowerCase())) {
-					themes.add(theme);
-					break;
-				}
-			}
-		}
-
-		return Array.from(themes);
 	}
 
 	extractActionItems(content: string): ActionItem[] {
@@ -121,17 +103,13 @@ export class MeetingAnalyzer {
 		const allMeetings = await this.getAllMeetings();
 		const personMeetings = allMeetings.filter(m => m.person === person);
 
-		const commonThemes = new Map<string, number>();
 		const moods: string[] = [];
 		let openActions = 0;
 		let totalActions = 0;
 
 		for (const meeting of personMeetings) {
-			for (const theme of meeting.themes) {
-				commonThemes.set(theme, (commonThemes.get(theme) || 0) + 1);
-			}
 			if (meeting.mood) moods.push(meeting.mood);
-			
+
 			for (const action of meeting.actionItems) {
 				totalActions++;
 				if (!action.completed) openActions++;
@@ -142,7 +120,6 @@ export class MeetingAnalyzer {
 			person,
 			meetingCount: personMeetings.length,
 			lastMeeting: personMeetings[0]?.date || 'Never',
-			commonThemes,
 			actionItemCompletion: openActions,
 			moodTrend: moods
 		};

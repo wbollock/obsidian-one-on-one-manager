@@ -4,7 +4,6 @@ import {Plugin, WorkspaceLeaf, Notice, Modal} from 'obsidian';
 import {DEFAULT_SETTINGS, OneOnOneSettings, OneOnOneSettingTab} from "./settings";
 import {DashboardView, DASHBOARD_VIEW_TYPE} from './dashboard-view';
 import {TimelineView, TIMELINE_VIEW_TYPE} from './timeline-view';
-import {CoachingPlanView, COACHING_PLAN_VIEW_TYPE} from './coaching-plan-view';
 import {GoalsView, GOALS_VIEW_TYPE} from './goals-view';
 import {CreateMeetingModal} from './create-meeting-modal';
 import {PersonProfileModal} from './person-profile-modal';
@@ -33,11 +32,6 @@ export default class OneOnOneManager extends Plugin {
 		this.registerView(
 			TIMELINE_VIEW_TYPE,
 			(leaf) => new TimelineView(leaf, this, '')
-		);
-
-		this.registerView(
-			COACHING_PLAN_VIEW_TYPE,
-			(leaf) => new CoachingPlanView(leaf, this, '')
 		);
 
 		this.registerView(
@@ -79,8 +73,12 @@ export default class OneOnOneManager extends Plugin {
 			id: 'edit-meeting-template',
 			name: 'Edit 1:1 Meeting Template',
 			callback: async () => {
-				await this.settingTab.openTemplateInNote();
-				new Notice('Template opened for editing. Save and use "Load from Note" in settings to apply changes.');
+				try {
+					await this.settingTab.openTemplateInNote();
+				} catch (error) {
+					console.error('Error opening template:', error);
+					new Notice('❌ Error opening template. Check console for details.');
+				}
 			}
 		});
 
@@ -162,14 +160,6 @@ export default class OneOnOneManager extends Plugin {
 		}
 	}
 
-	async openCoachingPlanView(person: string): Promise<void> {
-		const leaf = this.app.workspace.getLeaf('tab');
-		if (leaf) {
-			const view = new CoachingPlanView(leaf, this, person);
-			await leaf.open(view);
-		}
-	}
-
 	async openGoalsView(person: string): Promise<void> {
 		const leaf = this.app.workspace.getLeaf('tab');
 		if (leaf) {
@@ -181,7 +171,6 @@ export default class OneOnOneManager extends Plugin {
 	onunload() {
 		this.app.workspace.detachLeavesOfType(DASHBOARD_VIEW_TYPE);
 		this.app.workspace.detachLeavesOfType(TIMELINE_VIEW_TYPE);
-		this.app.workspace.detachLeavesOfType(COACHING_PLAN_VIEW_TYPE);
 		this.app.workspace.detachLeavesOfType(GOALS_VIEW_TYPE);
 	}
 
