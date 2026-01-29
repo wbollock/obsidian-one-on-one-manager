@@ -628,6 +628,8 @@
 	font-weight: 700;
 	font-size: 0.95em;
 	transition: all 0.2s;
+	background: var(--interactive-accent);
+	color: rgba(0, 0, 0, 0.85) !important;
 }
 
 .form-buttons button[type="submit"],
@@ -1032,11 +1034,6 @@
 	margin: 0;
 	color: var(--text-muted);
 	font-size: 0.9em;
-}
-
-.reflection-primary-btn {
-	background: var(--interactive-accent);
-	color: var(--text-on-accent);
 }
 
 .reflection-slack-btn {
