@@ -1,12 +1,18 @@
 # 1:1 Manager
 
+A comprehensive Obsidian plugin for managing one-on-one meetings, tracking goals, and maintaining relationships with your direct reports.
+
+---
+
+## Overview
+
 This is a plugin for managing your one-on-one meetings in Obsidian. If you're a manager (or direct report, or anyone who has regular check-ins with people), this gives you a place to keep notes, track what you talked about, and remember what you actually need to do.
 
-## Why this exists
+### Why this exists
 
 It makes 1:1 notes and reminders much easier. With the push of a button you can start taking 1:1 notes with a customizable template. Track the goals of your reports to help them meet their targets and never forget action items stemming from 1:1s again. It also helps organize your 1:1 notes cleanly!
 
-## What it does
+## Features
 
 ### Dashboard
 
@@ -40,15 +46,22 @@ Add profiles for your direct reports (or whoever you meet with regularly). Track
 
 ![Person profile management modal with fields for name, role, level, team, start date, and other employee information](docs/images/profiles.png)
 
-## Setup
+## Installation
 
-You'll need Obsidian v0.15.0+ and Node.js v16+ to build this. Eventually it might be in the community plugin repository.
+### Requirements
 
-1. Clone or download this repo into your vault's plugins folder:
-   - Windows: `<YourVault>\.obsidian\plugins\one-on-one-manager`
+- Obsidian v0.15.0 or higher
+- Node.js v16 or higher (for building)
+
+### Setup
+
+1. Clone or download this repo into your Obsidian vault's plugins folder:
+
    - Mac/Linux: `<YourVault>/.obsidian/plugins/one-on-one-manager`
+   - Windows: `<YourVault>\.obsidian\plugins\one-on-one-manager`
 
-2. Install and build:
+2. Install dependencies and build:
+
    ```bash
    cd one-on-one-manager
    npm install
@@ -56,8 +69,18 @@ You'll need Obsidian v0.15.0+ and Node.js v16+ to build this. Eventually it migh
    ```
 
 3. Enable the plugin in Obsidian:
-   - Settings → Community plugins
+   - Open Settings → Community plugins
    - Turn off Safe mode if it's on
    - Find "1:1 Manager" and toggle it on
 
+### Development
+
 For development, run `npm run dev` to auto-rebuild on changes. You'll still need to reload Obsidian (Ctrl/Cmd+R) to see updates.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Contributing
+
+Contributions are welcome! Feel free to open issues or submit pull requests.
