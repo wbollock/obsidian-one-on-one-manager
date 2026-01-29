@@ -71,6 +71,16 @@ export class DashboardView extends ItemView {
 			new Notice('Dashboard refreshed');
 		});
 
+		const editTemplateBtn = actionsDiv.createEl('button', {
+			text: '📝 Edit 1:1 Template',
+			cls: 'dashboard-action-btn',
+			attr: {title: 'Edit the template used for all future 1:1 meetings'}
+		});
+		editTemplateBtn.addEventListener('click', async () => {
+			await this.plugin.settingTab.openTemplateInNote();
+			new Notice('Template opened for editing. Save and use "Load from Note" in settings to apply changes.');
+		});
+
 		const meetings = await this.analyzer.getAllMeetings();
 		const peopleWithMeetings = await this.analyzer.getAllPeople();
 		const profiles = await this.plugin.peopleManager.getAllPeople();

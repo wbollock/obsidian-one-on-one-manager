@@ -17,6 +17,7 @@ export default class OneOnOneManager extends Plugin {
 	settings: OneOnOneSettings;
 	peopleManager: PeopleManager;
 	goalsManager: GoalsManager;
+	settingTab: OneOnOneSettingTab;
 
 	async onload() {
 		await this.loadSettings();
@@ -75,6 +76,15 @@ export default class OneOnOneManager extends Plugin {
 		});
 
 		this.addCommand({
+			id: 'edit-meeting-template',
+			name: 'Edit 1:1 Meeting Template',
+			callback: async () => {
+				await this.settingTab.openTemplateInNote();
+				new Notice('Template opened for editing. Save and use "Load from Note" in settings to apply changes.');
+			}
+		});
+
+		this.addCommand({
 			id: 'add-agenda-item',
 			name: 'Add Agenda Item for Next 1:1',
 			callback: async () => {
@@ -122,7 +132,8 @@ export default class OneOnOneManager extends Plugin {
 			}
 		});
 
-		this.addSettingTab(new OneOnOneSettingTab(this.app, this));
+		this.settingTab = new OneOnOneSettingTab(this.app, this);
+		this.addSettingTab(this.settingTab);
 	}
 
 	async openDashboard(): Promise<void> {
