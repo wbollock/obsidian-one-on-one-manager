@@ -47,19 +47,19 @@ export class DashboardView extends ItemView {
 		const contentEl = container.createEl('div', {cls: 'one-on-one-dashboard'});
 
 		const headerDiv = contentEl.createEl('div', {cls: 'dashboard-header'});
-		headerDiv.createEl('h1', {text: '1:1 Dashboard', cls: 'dashboard-title'});
+		headerDiv.createEl('h2', {text: '1:1 Dashboard', cls: 'dashboard-title'});
 		
 		const actionsDiv = headerDiv.createEl('div', {cls: 'dashboard-actions'});
 		
 		const addPersonBtn = actionsDiv.createEl('button', {
-			text: '+ Add Person',
-			cls: 'dashboard-action-btn'
+			cls: 'dashboard-action-btn clickable-icon',
+			attr: {title: 'Add person', 'aria-label': 'Add person'}
 		});
+		addPersonBtn.textContent = '+';
 		addPersonBtn.addEventListener('click', () => {
 			new PersonProfileModal(this.app, this.plugin, null, async (profile) => {
 				try {
 					await this.plugin.peopleManager.savePersonProfile(profile);
-					// Small delay to ensure file system and cache are updated
 					await new Promise(resolve => setTimeout(resolve, 100));
 					await this.render();
 					new Notice(`✓ Added ${profile.name}`);
@@ -71,19 +71,20 @@ export class DashboardView extends ItemView {
 		});
 
 		const refreshBtn = actionsDiv.createEl('button', {
-			text: '🔄 Refresh',
-			cls: 'dashboard-action-btn'
+			cls: 'dashboard-action-btn clickable-icon',
+			attr: {title: 'Refresh', 'aria-label': 'Refresh'}
 		});
+		refreshBtn.textContent = '↻';
 		refreshBtn.addEventListener('click', async () => {
 			await this.render();
 			new Notice('Dashboard refreshed');
 		});
 
 		const editTemplateBtn = actionsDiv.createEl('button', {
-			text: '📝 Edit 1:1 Template',
-			cls: 'dashboard-action-btn',
-			attr: {title: 'Edit the template used for all future 1:1 meetings'}
+			cls: 'dashboard-action-btn clickable-icon',
+			attr: {title: 'Edit 1:1 template', 'aria-label': 'Edit 1:1 template'}
 		});
+		editTemplateBtn.textContent = '✎';
 		editTemplateBtn.addEventListener('click', async () => {
 			try {
 				await this.plugin.settingTab.openTemplateInNote();
@@ -118,58 +119,51 @@ export class DashboardView extends ItemView {
 	}
 
 	private async renderOverview(container: HTMLElement, meetings: any[], people: string[]): Promise<void> {
-		const section = container.createEl('div', {cls: 'dashboard-section'});
-		section.createEl('h2', {text: 'Overview'});
+		const stats = container.createEl('div', {cls: 'stats-grid'});
 
-		const stats = section.createEl('div', {cls: 'stats-grid'});
-
-		this.createStatCard(stats, 'Total People', people.length.toString(), '👥');
-		this.createStatCard(stats, 'Total Meetings', meetings.length.toString(), '📅');
-		
 		const thisMonth = meetings.filter(m => {
 			const meetingDate = new Date(m.date);
 			const now = new Date();
 			return meetingDate.getMonth() === now.getMonth() && 
 			       meetingDate.getFullYear() === now.getFullYear();
 		}).length;
-		this.createStatCard(stats, 'This Month', thisMonth.toString(), '📊');
 
 		const allActions = meetings.flatMap(m => m.actionItems);
 		const completedActions = allActions.filter(a => a.completed).length;
 		const completionRate = allActions.length > 0 
 			? Math.round((completedActions / allActions.length) * 100) 
 			: 0;
-		this.createStatCard(stats, 'Action Items Done', `${completionRate}%`, '✓');
+
+		this.createStatCard(stats, 'People', people.length.toString(), '👥');
+		this.createStatCard(stats, 'Meetings', meetings.length.toString(), '📅');
+		this.createStatCard(stats, 'This month', thisMonth.toString(), '📊');
+		this.createStatCard(stats, 'Done', `${completionRate}%`, '✓');
 	}
 
 	private createStatCard(container: HTMLElement, label: string, value: string, icon: string): void {
 		const card = container.createEl('div', {cls: 'stat-card'});
-		card.createEl('div', {text: icon, cls: 'stat-icon'});
-		card.createEl('div', {text: value, cls: 'stat-value'});
-		card.createEl('div', {text: label, cls: 'stat-label'});
+		card.createEl('span', {text: icon, cls: 'stat-icon'});
+		card.createEl('span', {text: value, cls: 'stat-value'});
+		card.createEl('span', {text: label, cls: 'stat-label'});
 	}
 
 	private async renderPeopleSection(container: HTMLElement, people: string[], profiles: any[]): Promise<void> {
 		const section = container.createEl('div', {cls: 'dashboard-section'});
-		section.createEl('h2', {text: 'Team Members'});
+		section.createEl('h3', {text: 'Team', cls: 'dashboard-section-title'});
 
 		if (people.length === 0) {
 			const emptyState = section.createEl('div', {cls: 'empty-state'});
-			emptyState.createEl('div', {text: '👥', cls: 'empty-state-icon'});
-			emptyState.createEl('h3', {text: 'No team members yet'});
-			const emptyText = emptyState.createEl('p');
-			emptyText.setText('Get started by adding a person or creating your first 1:1 note.');
+			emptyState.createEl('p', {text: 'No team members yet. Add a person or create a 1:1.'});
 			
 			const emptyActions = emptyState.createEl('div', {cls: 'empty-state-actions'});
 			const addPersonBtn = emptyActions.createEl('button', {
 				text: '+ Add Person',
-				cls: 'dashboard-action-btn'
+				cls: 'person-action-btn'
 			});
 			addPersonBtn.addEventListener('click', () => {
 				new PersonProfileModal(this.app, this.plugin, null, async (profile) => {
 					try {
 						await this.plugin.peopleManager.savePersonProfile(profile);
-						// Small delay to ensure file system and cache are updated
 						await new Promise(resolve => setTimeout(resolve, 100));
 						await this.render();
 						new Notice(`✓ Added ${profile.name}`);
@@ -182,11 +176,10 @@ export class DashboardView extends ItemView {
 			
 			const createMeetingBtn = emptyActions.createEl('button', {
 				text: '+ Create 1:1',
-				cls: 'dashboard-action-btn'
+				cls: 'person-action-btn'
 			});
 			createMeetingBtn.addEventListener('click', () => {
 				const modal = new CreateMeetingModal(this.app, this.plugin, async () => {
-					// Refresh dashboard before navigating to the new meeting note
 					await new Promise(resolve => setTimeout(resolve, 100));
 					await this.render();
 				});
@@ -196,38 +189,22 @@ export class DashboardView extends ItemView {
 			return;
 		}
 
-		const grid = section.createEl('div', {cls: 'people-grid'});
+		const list = section.createEl('div', {cls: 'people-list'});
 
 		for (const person of people) {
 			const stats = await this.analyzer.getPersonStats(person);
 			const profile = profiles.find(p => p.name === person);
 			
-			const card = grid.createEl('div', {cls: 'person-card'});
+			const card = list.createEl('div', {cls: 'person-card'});
 
 			const header = card.createEl('div', {cls: 'person-header'});
-			header.createEl('h3', {text: person});
+			header.createEl('strong', {text: person});
 			
-			if (profile) {
-				if (profile.role) {
-					const roleEl = card.createEl('div', {cls: 'person-role'});
-					roleEl.createEl('span', {text: profile.role});
-					if (profile.level) {
-						roleEl.createEl('span', {text: ` (${profile.level})`, cls: 'person-level'});
-					}
-				}
+			const meta = header.createEl('span', {cls: 'person-meta'});
+			meta.textContent = `${stats.meetingCount} mtgs · ${stats.lastMeeting}`;
+			if (stats.actionItemCompletion > 0) {
+				meta.textContent += ` · ${stats.actionItemCompletion} open`;
 			}
-			
-			const meetingCount = card.createEl('div', {cls: 'person-stat'});
-			meetingCount.createEl('span', {text: 'Meetings: '});
-			meetingCount.createEl('strong', {text: stats.meetingCount.toString()});
-
-			const lastMeeting = card.createEl('div', {cls: 'person-stat'});
-			lastMeeting.createEl('span', {text: 'Last: '});
-			lastMeeting.createEl('strong', {text: stats.lastMeeting});
-
-		const completion = card.createEl('div', {cls: 'person-stat'});
-		completion.createEl('span', {text: 'Open Action Items: '});
-		completion.createEl('strong', {text: stats.actionItemCompletion.toString()});
 
 		// Show agenda items
 		if (profile?.agendaItems && profile.agendaItems.length > 0) {
@@ -441,7 +418,7 @@ export class DashboardView extends ItemView {
 
 	private async renderActionItemsSection(container: HTMLElement, meetings: any[]): Promise<void> {
 		const section = container.createEl('div', {cls: 'dashboard-section'});
-		section.createEl('h2', {text: 'Outstanding Action Items'});
+		section.createEl('h3', {text: 'Open action items', cls: 'dashboard-section-title'});
 
 		const allActions = meetings.flatMap(m => 
 			m.actionItems.map((a: any) => ({...a, person: m.person, meetingDate: m.date}))
@@ -450,10 +427,7 @@ export class DashboardView extends ItemView {
 		const incomplete = allActions.filter(a => !a.completed);
 		
 		if (incomplete.length === 0) {
-			const emptyState = section.createEl('div', {cls: 'empty-state-success'});
-			emptyState.createEl('div', {text: '🎉', cls: 'empty-state-icon'});
-			emptyState.createEl('h3', {text: 'All action items completed!'});
-			emptyState.createEl('p', {text: 'Great work! No outstanding action items at the moment.'});
+			section.createEl('p', {text: '🎉 All done!', cls: 'empty-state-text'});
 			return;
 		}
 

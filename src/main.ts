@@ -142,7 +142,7 @@ export default class OneOnOneManager extends Plugin {
 			return;
 		}
 
-		const leaf = this.app.workspace.getRightLeaf(false);
+		const leaf = this.app.workspace.getLeftLeaf(false);
 		if (!leaf) return;
 		
 		await leaf.setViewState({
