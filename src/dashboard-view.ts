@@ -16,6 +16,7 @@ export class DashboardView extends ItemView {
 	plugin: OneOnOneManager;
 	analyzer: MeetingAnalyzer;
 	private expandedPeople: Set<string> = new Set();
+	private expandedActionGroups: Set<string> = new Set();
 
 	constructor(leaf: WorkspaceLeaf, plugin: OneOnOneManager) {
 		super(leaf);
@@ -520,10 +521,32 @@ export class DashboardView extends ItemView {
 			if (personActions.length === 0) continue;
 
 			const group = list.createEl('div', {cls: 'action-items-group'});
-			group.createEl('div', {text: person, cls: 'action-items-group-title'});
+			if (this.expandedActionGroups.has(person)) {
+				group.addClass('is-expanded');
+			}
+
+			const groupHeader = group.createEl('div', {cls: 'action-items-group-header'});
+
+			const collapseIcon = groupHeader.createEl('span', {cls: 'action-items-collapse-icon'});
+			setIcon(collapseIcon, 'chevron-right');
+
+			groupHeader.createEl('span', {text: person, cls: 'action-items-group-title'});
+			groupHeader.createEl('span', {text: `(${personActions.length})`, cls: 'action-items-group-count'});
+
+			groupHeader.addEventListener('click', () => {
+				const expanded = group.hasClass('is-expanded');
+				group.toggleClass('is-expanded', !expanded);
+				if (expanded) {
+					this.expandedActionGroups.delete(person);
+				} else {
+					this.expandedActionGroups.add(person);
+				}
+			});
+
+			const groupList = group.createEl('div', {cls: 'action-items-group-list'});
 
 			for (const action of personActions) {
-				const item = group.createEl('div', {cls: 'action-item'});
+				const item = groupList.createEl('div', {cls: 'action-item'});
 
 				const checkbox = item.createEl('input', {type: 'checkbox'});
 				checkbox.checked = false;
