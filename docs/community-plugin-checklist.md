@@ -19,27 +19,19 @@ plus the non-lint release/submission requirements.
       `void | Promise<void>`
 - [x] Settings heading repeating "settings"/plugin name, `console.log` →
       `console.debug` (2x), deprecated `.substr()` → `.slice()`
+- [x] Typed the data model: replaced `any`/`any[]` params with the real
+      OneOnOneMeeting/PersonProfile/AgendaItem/PersonStats interfaces from
+      types.ts (added GoalStats), typed frontmatter cache access via local
+      interfaces, replaced `as any` TFile casts with `instanceof TFile`
+- [x] Sentence case for all 76 flagged UI strings (buttons, headings,
+      dropdown options, command names, Notice messages)
+- [x] Removed all 13 unused-vars warnings (dangling imports, dead DOM refs)
 
-## Remaining (209 problems left: 196 errors, 13 warnings, 13 auto-fixable)
+**`npm run lint` and `npm run build` are both fully clean — 0 problems.**
 
-1. **Type the data model** (~120 instances: `no-unsafe-member-access` 49,
-   `no-unsafe-assignment` 28, `no-unsafe-argument` 16, `no-explicit-any` 13,
-   `no-unsafe-call` 9, `no-unsafe-return` 5)
-   Biggest chunk. Meetings/stats/goals objects are passed around as `any`
-   instead of the real interfaces already defined in `types.ts`. Touches
-   analyzer.ts, timeline-view.ts, goals-manager.ts, people-manager.ts,
-   create-meeting-modal.ts, dashboard-view.ts.
+## Remaining
 
-2. **Sentence case** (76 instances)
-   Button/label/heading text across nearly every file must be sentence
-   case, not Title Case. Mechanical.
-
-3. **Final sweep**
-   `no-unused-vars` (13 warnings), `eslint --fix` for remaining
-   auto-fixable issues, then confirm `npm run lint` and `npm run build`
-   are both fully clean.
-
-4. **Non-lint submission requirements** (stop and confirm before this step)
+1. **Non-lint submission requirements** (stop and confirm before this step)
    - Cut a GitHub release tagged `1.0.0` (no `v` prefix) with `main.js`,
      `manifest.json`, `styles.css` attached as individual assets.
    - Confirm plugin id `one-on-one-manager` isn't already taken in
