@@ -168,12 +168,6 @@ export default class OneOnOneManager extends Plugin {
 		}
 	}
 
-	onunload() {
-		this.app.workspace.detachLeavesOfType(DASHBOARD_VIEW_TYPE);
-		this.app.workspace.detachLeavesOfType(TIMELINE_VIEW_TYPE);
-		this.app.workspace.detachLeavesOfType(GOALS_VIEW_TYPE);
-	}
-
 	async loadSettings() {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData() as Partial<OneOnOneSettings>);
 	}
