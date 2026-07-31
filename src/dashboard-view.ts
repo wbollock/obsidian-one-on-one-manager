@@ -1,6 +1,6 @@
 // ABOUTME: Dashboard view showing 1:1 analytics and visualizations
 // ABOUTME: Displays meeting frequency, action items, and mood trends
-import {ItemView, WorkspaceLeaf, Notice, setIcon} from 'obsidian';
+import {ItemView, WorkspaceLeaf, Notice, setIcon, TFile, debounce} from 'obsidian';
 import OneOnOneManager from './main';
 import {MeetingAnalyzer} from './analyzer';
 import {PersonProfileModal} from './person-profile-modal';
@@ -37,6 +37,16 @@ export class DashboardView extends ItemView {
 
 	async onOpen(): Promise<void> {
 		await this.render();
+
+		const scheduleRefresh = debounce(() => {
+			void this.render();
+		}, 1000, true);
+
+		this.registerEvent(this.app.vault.on('modify', (file) => {
+			if (file instanceof TFile && file.path.startsWith(this.plugin.settings.oneOnOneFolder)) {
+				scheduleRefresh();
+			}
+		}));
 	}
 
 	async render(): Promise<void> {
