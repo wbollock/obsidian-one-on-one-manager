@@ -81,13 +81,9 @@ export class CreateMeetingModal extends Modal {
 		const buttonDiv = form.createEl('div', {cls: 'form-buttons'});
 		
 		const createBtn = buttonDiv.createEl('button', {text: 'Create 1:1 Note', type: 'submit', cls: 'mod-cta'});
-		createBtn.addEventListener('click', async (e) => {
+		createBtn.addEventListener('click', (e) => {
 			e.preventDefault();
-			createBtn.disabled = true;
-			createBtn.setText('Creating...');
-			await this.createMeeting();
-			createBtn.disabled = false;
-			createBtn.setText('Create 1:1 Note');
+			void this.handleCreateClick(createBtn);
 		});
 
 		const cancelBtn = buttonDiv.createEl('button', {text: 'Cancel', type: 'button'});
@@ -102,6 +98,14 @@ export class CreateMeetingModal extends Modal {
 				createBtn.click();
 			}
 		});
+	}
+
+	private async handleCreateClick(createBtn: HTMLButtonElement): Promise<void> {
+		createBtn.disabled = true;
+		createBtn.setText('Creating...');
+		await this.createMeeting();
+		createBtn.disabled = false;
+		createBtn.setText('Create 1:1 Note');
 	}
 
 	async createMeeting(): Promise<void> {

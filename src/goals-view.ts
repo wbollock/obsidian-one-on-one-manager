@@ -73,9 +73,9 @@ export class GoalsView extends ItemView {
 			}
 		});
 
-		yearSelector.addEventListener('change', async () => {
+		yearSelector.addEventListener('change', () => {
 			this.selectedYear = parseInt(yearSelector.value);
-			await this.render();
+			void this.render();
 		});
 
 		const addGoalBtn = toolbar.createEl('button', {
@@ -270,6 +270,13 @@ export class GoalsView extends ItemView {
 		});
 	}
 
+	private async carryOverGoals(incompleteGoals: Goal[]): Promise<void> {
+		const goalIds = incompleteGoals.map(g => g.id);
+		await this.goalsManager.carryoverGoals(this.person, goalIds);
+		this.selectedYear = new Date().getFullYear();
+		await this.render();
+	}
+
 	private async renderArchivedGoals(container: HTMLElement, goals: Goal[]): Promise<void> {
 		const section = container.createEl('div', {cls: 'goals-section archived-section'});
 		const header = section.createEl('h2', {text: `📦 Archived Goals (${goals.length})`});
@@ -296,11 +303,8 @@ export class GoalsView extends ItemView {
 			cls: 'mod-cta'
 		});
 
-		btn.addEventListener('click', async () => {
-			const goalIds = incompleteGoals.map(g => g.id);
-			await this.goalsManager.carryoverGoals(this.person, goalIds);
-			this.selectedYear = new Date().getFullYear();
-			await this.render();
+		btn.addEventListener('click', () => {
+			void this.carryOverGoals(incompleteGoals);
 		});
 	}
 

@@ -40,7 +40,7 @@ export default class OneOnOneManager extends Plugin {
 		);
 
 		this.addRibbonIcon('users', 'Open 1:1 Dashboard', () => {
-			this.openDashboard();
+			void this.openDashboard();
 		});
 
 		this.addCommand({
@@ -65,7 +65,7 @@ export default class OneOnOneManager extends Plugin {
 			id: 'open-dashboard',
 			name: 'Open Dashboard',
 			callback: () => {
-				this.openDashboard();
+				void this.openDashboard();
 			}
 		});
 
@@ -115,7 +115,7 @@ export default class OneOnOneManager extends Plugin {
 						const dashboardLeaves = this.app.workspace.getLeavesOfType(DASHBOARD_VIEW_TYPE);
 						if (dashboardLeaves.length > 0 && dashboardLeaves[0]) {
 							const view = dashboardLeaves[0].view as DashboardView;
-							view.render();
+							void view.render();
 						}
 					}).open();
 				});
@@ -132,18 +132,18 @@ export default class OneOnOneManager extends Plugin {
 		const existing = this.app.workspace.getLeavesOfType(DASHBOARD_VIEW_TYPE);
 		
 		if (existing.length > 0 && existing[0]) {
-			this.app.workspace.revealLeaf(existing[0]);
+			await this.app.workspace.revealLeaf(existing[0]);
 			return;
 		}
 
 		const leaf = this.app.workspace.getLeftLeaf(false);
 		if (!leaf) return;
-		
+
 		await leaf.setViewState({
 			type: DASHBOARD_VIEW_TYPE,
 			active: true
 		});
-		this.app.workspace.revealLeaf(leaf);
+		await this.app.workspace.revealLeaf(leaf);
 	}
 
 	async openTimelineView(person: string): Promise<void> {

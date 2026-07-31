@@ -93,7 +93,7 @@ export class TimelineView extends ItemView {
 			
 			titleLink.addEventListener('click', (e) => {
 				e.preventDefault();
-				this.app.workspace.openLinkText(meeting.filePath, '', false);
+				void this.app.workspace.openLinkText(meeting.filePath, '', false);
 			});
 
 			if (meeting.mood) {

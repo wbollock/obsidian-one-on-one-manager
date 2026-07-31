@@ -195,7 +195,7 @@ export class GoalModal extends Modal {
 			text: this.goal ? 'Save Changes' : 'Create Goal',
 			cls: 'mod-cta'
 		});
-		saveBtn.addEventListener('click', () => this.handleSave());
+		saveBtn.addEventListener('click', () => void this.handleSave());
 
 		const cancelBtn = buttonDiv.createEl('button', {text: 'Cancel'});
 		cancelBtn.addEventListener('click', () => this.close());

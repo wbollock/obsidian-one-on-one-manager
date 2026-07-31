@@ -7,10 +7,10 @@ import {PersonProfile} from './types';
 export class PersonProfileModal extends Modal {
 	plugin: OneOnOneManager;
 	profile: PersonProfile;
-	onSave: (profile: PersonProfile) => void;
+	onSave: (profile: PersonProfile) => void | Promise<void>;
 	isNew: boolean;
 
-	constructor(app: App, plugin: OneOnOneManager, profile: PersonProfile | null, onSave: (profile: PersonProfile) => void) {
+	constructor(app: App, plugin: OneOnOneManager, profile: PersonProfile | null, onSave: (profile: PersonProfile) => void | Promise<void>) {
 		super(app);
 		this.plugin = plugin;
 		this.isNew = profile === null;
@@ -90,9 +90,9 @@ export class PersonProfileModal extends Modal {
 		const buttonDiv = form.createEl('div', {cls: 'form-buttons'});
 		
 		const saveBtn = buttonDiv.createEl('button', {text: 'Save', type: 'submit'});
-		saveBtn.addEventListener('click', async (e) => {
+		saveBtn.addEventListener('click', (e) => {
 			e.preventDefault();
-			await this.save();
+			void this.save();
 		});
 
 		const cancelBtn = buttonDiv.createEl('button', {text: 'Cancel', type: 'button'});

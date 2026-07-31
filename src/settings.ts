@@ -130,8 +130,8 @@ export class OneOnOneSettingTab extends PluginSettingTab {
 			text: '📝 Edit Template',
 			cls: 'mod-cta'
 		});
-		openTemplateBtn.addEventListener('click', async () => {
-			await this.openTemplateInNote();
+		openTemplateBtn.addEventListener('click', () => {
+			void this.openTemplateInNote();
 		});
 
 		new Setting(containerEl)

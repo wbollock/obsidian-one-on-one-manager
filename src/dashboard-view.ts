@@ -112,9 +112,8 @@ export class DashboardView extends ItemView {
 			attr: {title: 'Refresh', 'aria-label': 'Refresh'}
 		});
 		setIcon(refreshBtn, 'refresh-cw');
-		refreshBtn.addEventListener('click', async () => {
-			await this.render();
-			new Notice('Dashboard refreshed');
+		refreshBtn.addEventListener('click', () => {
+			void this.handleRefreshClick();
 		});
 
 		const editTemplateBtn = actionsDiv.createEl('button', {
@@ -122,13 +121,8 @@ export class DashboardView extends ItemView {
 			attr: {title: 'Edit 1:1 template', 'aria-label': 'Edit 1:1 template'}
 		});
 		setIcon(editTemplateBtn, 'pencil');
-		editTemplateBtn.addEventListener('click', async () => {
-			try {
-				await this.plugin.settingTab.openTemplateInNote();
-			} catch (error) {
-				console.error('Error opening template from dashboard:', error);
-				new Notice('❌ Error opening template. Check console for details.');
-			}
+		editTemplateBtn.addEventListener('click', () => {
+			void this.handleEditTemplateClick();
 		});
 
 		await this.renderOverview(contentEl, meetings, people);
@@ -139,6 +133,20 @@ export class DashboardView extends ItemView {
 		setTimeout(() => {
 			container.scrollTop = scrollTop;
 		}, 0);
+	}
+
+	private async handleRefreshClick(): Promise<void> {
+		await this.render();
+		new Notice('Dashboard refreshed');
+	}
+
+	private async handleEditTemplateClick(): Promise<void> {
+		try {
+			await this.plugin.settingTab.openTemplateInNote();
+		} catch (error) {
+			console.error('Error opening template from dashboard:', error);
+			new Notice('❌ Error opening template. Check console for details.');
+		}
 	}
 
 	private async renderOverview(container: HTMLElement, meetings: any[], people: string[]): Promise<void> {
@@ -239,7 +247,7 @@ export class DashboardView extends ItemView {
 
 			nameEl.addEventListener('click', (e) => {
 				e.stopPropagation();
-				this.plugin.openTimelineView(person);
+				void this.plugin.openTimelineView(person);
 			});
 
 			header.addEventListener('click', () => {
@@ -269,20 +277,22 @@ export class DashboardView extends ItemView {
 					
 					const checkbox = agendaItem.createEl('input', {type: 'checkbox'});
 					checkbox.checked = false;
-					checkbox.addEventListener('click', async (e) => {
+					checkbox.addEventListener('click', (e) => {
 						e.stopPropagation();
-						await this.plugin.peopleManager.toggleAgendaItem(person, item.id);
-						// Just remove the item from DOM
-						agendaItem.remove();
-						// Update count
-						const countEl = agendaHeader.querySelector('.person-agenda-count');
-						if (countEl) {
-							const newCount = pendingItems.length - 1;
-							countEl.textContent = `(${newCount})`;
-							if (newCount === 0) {
-								agendaSection.remove();
+						void (async () => {
+							await this.plugin.peopleManager.toggleAgendaItem(person, item.id);
+							// Just remove the item from DOM
+							agendaItem.remove();
+							// Update count
+							const countEl = agendaHeader.querySelector('.person-agenda-count');
+							if (countEl) {
+								const newCount = pendingItems.length - 1;
+								countEl.textContent = `(${newCount})`;
+								if (newCount === 0) {
+									agendaSection.remove();
+								}
 							}
-						}
+						})();
 					});
 					
 					const text = agendaItem.createEl('span', {text: item.text, cls: 'person-agenda-text'});
@@ -294,20 +304,22 @@ export class DashboardView extends ItemView {
 						text: '×',
 						cls: 'person-agenda-delete'
 					});
-					deleteBtn.addEventListener('click', async (e) => {
+					deleteBtn.addEventListener('click', (e) => {
 						e.stopPropagation();
-						await this.plugin.peopleManager.removeAgendaItem(person, item.id);
-						// Just remove the item from DOM
-						agendaItem.remove();
-						// Update count
-						const countEl = agendaHeader.querySelector('.person-agenda-count');
-						if (countEl) {
-							const newCount = pendingItems.length - 1;
-							countEl.textContent = `(${newCount})`;
-							if (newCount === 0) {
-								agendaSection.remove();
+						void (async () => {
+							await this.plugin.peopleManager.removeAgendaItem(person, item.id);
+							// Just remove the item from DOM
+							agendaItem.remove();
+							// Update count
+							const countEl = agendaHeader.querySelector('.person-agenda-count');
+							if (countEl) {
+								const newCount = pendingItems.length - 1;
+								countEl.textContent = `(${newCount})`;
+								if (newCount === 0) {
+									agendaSection.remove();
+								}
 							}
-						}
+						})();
 					});
 				}
 
@@ -374,19 +386,21 @@ export class DashboardView extends ItemView {
 					
 					const checkbox = agendaItem.createEl('input', {type: 'checkbox'});
 					checkbox.checked = false;
-					checkbox.addEventListener('click', async (clickE) => {
+					checkbox.addEventListener('click', (clickE) => {
 						clickE.stopPropagation();
-						await this.plugin.peopleManager.toggleAgendaItem(person, newItem.id);
-						agendaItem.remove();
-						const countEl = agendaSection.querySelector('.person-agenda-count');
-						if (countEl) {
-							const currentCount = parseInt(countEl.textContent?.replace(/[()]/g, '') || '0');
-							const newCount = currentCount - 1;
-							countEl.textContent = `(${newCount})`;
-							if (newCount === 0) {
-								agendaSection.remove();
+						void (async () => {
+							await this.plugin.peopleManager.toggleAgendaItem(person, newItem.id);
+							agendaItem.remove();
+							const countEl = agendaSection.querySelector('.person-agenda-count');
+							if (countEl) {
+								const currentCount = parseInt(countEl.textContent?.replace(/[()]/g, '') || '0');
+								const newCount = currentCount - 1;
+								countEl.textContent = `(${newCount})`;
+								if (newCount === 0) {
+									agendaSection.remove();
+								}
 							}
-						}
+						})();
 					});
 					
 					const text = agendaItem.createEl('span', {text: newItem.text, cls: 'person-agenda-text'});
@@ -398,19 +412,21 @@ export class DashboardView extends ItemView {
 						text: '×',
 						cls: 'person-agenda-delete'
 					});
-					deleteBtn.addEventListener('click', async (clickE) => {
+					deleteBtn.addEventListener('click', (clickE) => {
 						clickE.stopPropagation();
-						await this.plugin.peopleManager.removeAgendaItem(person, newItem.id);
-						agendaItem.remove();
-						const countEl = agendaSection.querySelector('.person-agenda-count');
-						if (countEl) {
-							const currentCount = parseInt(countEl.textContent?.replace(/[()]/g, '') || '0');
-							const newCount = currentCount - 1;
-							countEl.textContent = `(${newCount})`;
-							if (newCount === 0) {
-								agendaSection.remove();
+						void (async () => {
+							await this.plugin.peopleManager.removeAgendaItem(person, newItem.id);
+							agendaItem.remove();
+							const countEl = agendaSection.querySelector('.person-agenda-count');
+							if (countEl) {
+								const currentCount = parseInt(countEl.textContent?.replace(/[()]/g, '') || '0');
+								const newCount = currentCount - 1;
+								countEl.textContent = `(${newCount})`;
+								if (newCount === 0) {
+									agendaSection.remove();
+								}
 							}
-						}
+						})();
 					});
 				}
 			}).open();
@@ -422,9 +438,9 @@ export class DashboardView extends ItemView {
 			cls: 'person-action-btn-small',
 			attr: {title: 'View goals'}
 		});
-		goalsBtn.addEventListener('click', async (e) => {
+		goalsBtn.addEventListener('click', (e) => {
 			e.stopPropagation();
-			await this.plugin.openGoalsView(person);
+			void this.plugin.openGoalsView(person);
 		});
 
 		const editBtn = actionsDiv.createEl('button', {
@@ -432,7 +448,7 @@ export class DashboardView extends ItemView {
 			cls: 'person-action-btn-small',
 			attr: {title: 'Edit profile'}
 		});
-		editBtn.addEventListener('click', async (e) => {
+		editBtn.addEventListener('click', (e) => {
 			e.stopPropagation();
 			new PersonProfileModal(this.app, this.plugin, profile, async (updatedProfile) => {
 				await this.plugin.peopleManager.savePersonProfile(updatedProfile);

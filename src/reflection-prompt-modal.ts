@@ -69,8 +69,8 @@ export class ReflectionPromptModal extends Modal {
 			type: 'button',
 			cls: 'reflection-primary-btn'
 		});
-		addNotesBtn.addEventListener('click', async () => {
-			await this.app.workspace.openLinkText(this.filePath, '', false);
+		addNotesBtn.addEventListener('click', () => {
+			void this.app.workspace.openLinkText(this.filePath, '', false);
 			this.close();
 		});
 
