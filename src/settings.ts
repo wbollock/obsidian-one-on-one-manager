@@ -89,7 +89,7 @@ export class OneOnOneSettingTab extends PluginSettingTab {
 
 		containerEl.empty();
 
-		containerEl.createEl('h2', {text: '1:1 Manager Settings'});
+		new Setting(containerEl).setName('1:1 Manager settings').setHeading();
 
 		new Setting(containerEl)
 			.setName('1:1 Notes Folder')
@@ -113,12 +113,16 @@ export class OneOnOneSettingTab extends PluginSettingTab {
 					await this.plugin.saveSettings();
 				}));
 
-		containerEl.createEl('h3', {text: '1:1 Meeting Template'});
-		
+		new Setting(containerEl).setName('1:1 meeting template').setHeading();
+
 		const templateDesc = containerEl.createEl('p', {
 			cls: 'setting-item-description'
 		});
-		templateDesc.innerHTML = 'Customize the template used when creating new 1:1 meeting notes. Edit the template file and changes automatically apply. You can use variables like <code>{{person}}</code> and <code>{{date}}</code>.';
+		templateDesc.appendText('Customize the template used when creating new 1:1 meeting notes. Edit the template file and changes automatically apply. You can use variables like ');
+		templateDesc.createEl('code', {text: '{{person}}'});
+		templateDesc.appendText(' and ');
+		templateDesc.createEl('code', {text: '{{date}}'});
+		templateDesc.appendText('.');
 
 		const templateButtons = containerEl.createEl('div', {cls: 'template-buttons'});
 		templateButtons.style.marginBottom = '15px';
