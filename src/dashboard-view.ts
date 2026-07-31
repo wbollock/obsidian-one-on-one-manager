@@ -61,13 +61,12 @@ export class DashboardView extends ItemView {
 		const contentEl = container.createEl('div', {cls: 'one-on-one-dashboard'});
 
 		const meetings = await this.analyzer.getAllMeetings();
-		const peopleWithMeetings = await this.analyzer.getAllPeople();
 		const profiles = await this.plugin.peopleManager.getAllPeople();
 
 		// Merge people from meetings and profiles
 		const allPeopleSet = new Set<string>();
-		for (const person of peopleWithMeetings) {
-			allPeopleSet.add(person);
+		for (const meeting of meetings) {
+			allPeopleSet.add(meeting.person);
 		}
 		for (const profile of profiles) {
 			allPeopleSet.add(profile.name);
@@ -137,7 +136,7 @@ export class DashboardView extends ItemView {
 		});
 
 		await this.renderOverview(contentEl, meetings, people);
-		await this.renderPeopleSection(contentEl, people, profiles);
+		await this.renderPeopleSection(contentEl, people, profiles, meetings);
 		await this.renderActionItemsSection(contentEl, meetings);
 		
 		// Restore scroll position
@@ -189,7 +188,7 @@ export class DashboardView extends ItemView {
 		card.createEl('span', {text: label, cls: 'stat-label'});
 	}
 
-	private async renderPeopleSection(container: HTMLElement, people: string[], profiles: PersonProfile[]): Promise<void> {
+	private async renderPeopleSection(container: HTMLElement, people: string[], profiles: PersonProfile[], meetings: OneOnOneMeeting[]): Promise<void> {
 		const section = container.createEl('div', {cls: 'dashboard-section'});
 		section.createEl('h3', {text: 'Team', cls: 'dashboard-section-title'});
 
@@ -234,7 +233,7 @@ export class DashboardView extends ItemView {
 		const list = section.createEl('div', {cls: 'people-list'});
 
 		for (const person of people) {
-			const stats = await this.analyzer.getPersonStats(person);
+			const stats = this.analyzer.getPersonStats(person, meetings);
 			const profile = profiles.find(p => p.name === person);
 			
 			const card = list.createEl('div', {cls: 'person-card'});

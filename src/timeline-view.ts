@@ -53,7 +53,7 @@ export class TimelineView extends ItemView {
 			return;
 		}
 
-		const stats = await this.analyzer.getPersonStats(this.person);
+		const stats = this.analyzer.getPersonStats(this.person, meetings);
 		await this.renderStats(contentEl, stats);
 		await this.renderMeetings(contentEl, personMeetings);
 	}

@@ -128,8 +128,7 @@ export class MeetingAnalyzer {
 		await this.app.vault.modify(file, lines.join('\n'));
 	}
 
-	async getPersonStats(person: string): Promise<PersonStats> {
-		const allMeetings = await this.getAllMeetings();
+	getPersonStats(person: string, allMeetings: OneOnOneMeeting[]): PersonStats {
 		const personMeetings = allMeetings.filter(m => m.person === person);
 
 		const moods: string[] = [];
@@ -150,11 +149,5 @@ export class MeetingAnalyzer {
 			actionItemCompletion: openActions,
 			moodTrend: moods
 		};
-	}
-
-	async getAllPeople(): Promise<string[]> {
-		const meetings = await this.getAllMeetings();
-		const people = new Set(meetings.map(m => m.person));
-		return Array.from(people).sort();
 	}
 }
