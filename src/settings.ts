@@ -1,6 +1,6 @@
 // ABOUTME: Settings configuration for 1:1 Manager plugin
 // ABOUTME: Defines user preferences for folders and templates
-import {App, PluginSettingTab, Setting} from "obsidian";
+import {App, Notice, PluginSettingTab, Setting} from "obsidian";
 import OneOnOneManager from "./main";
 
 export interface OneOnOneSettings {
@@ -222,7 +222,7 @@ ${this.plugin.settings.meetingTemplate}
 		} catch (error) {
 			console.error('Error opening template:', error);
 			const message = error instanceof Error ? error.message : 'Unknown error';
-			alert(`❌ Error opening template: ${message}\n\nPlease check that the folder ${this.plugin.settings.oneOnOneFolder} exists.`);
+			new Notice(`❌ Error opening template: ${message}\n\nPlease check that the folder ${this.plugin.settings.oneOnOneFolder} exists.`, 6000);
 		}
 	}
 
@@ -231,7 +231,7 @@ ${this.plugin.settings.meetingTemplate}
 		const templateFile = this.app.vault.getAbstractFileByPath(templatePath);
 
 		if (!templateFile) {
-			alert('Template file not found. Click "Edit Template in Note" first to create it.');
+			new Notice('Template file not found. Click "Edit template in note" first to create it.');
 			return;
 		}
 
@@ -243,9 +243,9 @@ ${this.plugin.settings.meetingTemplate}
 			this.plugin.settings.meetingTemplate = match[1];
 			await this.plugin.saveSettings();
 			this.display(); // Refresh settings UI
-			alert('✅ Template loaded successfully!');
+			new Notice('✅ Template loaded successfully!');
 		} else {
-			alert('Could not parse template. Make sure the template is between the --- markers.');
+			new Notice('Could not parse template. Make sure the template is between the --- markers.');
 		}
 	}
 }

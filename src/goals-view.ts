@@ -5,6 +5,7 @@ import OneOnOneManager from './main';
 import {GoalsManager} from './goals-manager';
 import {Goal} from './types';
 import {GoalModal} from './goal-modal';
+import {ConfirmModal} from './confirm-modal';
 
 export const GOALS_VIEW_TYPE = 'one-on-one-goals-view';
 
@@ -94,11 +95,16 @@ export class GoalsView extends ItemView {
 				text: '📦 Archive This Year',
 				cls: 'archive-year-btn'
 			});
-			archiveBtn.addEventListener('click', async () => {
-				if (confirm(`Archive all goals from ${this.selectedYear}? They'll still be viewable but marked as archived.`)) {
-					await this.goalsManager.archiveYearGoals(this.person, this.selectedYear);
-					await this.render();
-				}
+			archiveBtn.addEventListener('click', () => {
+				new ConfirmModal(
+					this.app,
+					`Archive all goals from ${this.selectedYear}? They'll still be viewable but marked as archived.`,
+					async () => {
+						await this.goalsManager.archiveYearGoals(this.person, this.selectedYear);
+						await this.render();
+					},
+					{title: 'Archive year'}
+				).open();
 			});
 		}
 
@@ -251,11 +257,16 @@ export class GoalsView extends ItemView {
 		});
 
 		const deleteBtn = actions.createEl('button', {text: '🗑️ Delete', cls: 'goal-action-btn-danger'});
-		deleteBtn.addEventListener('click', async () => {
-			if (confirm(`Delete goal "${goal.title}"?`)) {
-				await this.goalsManager.deleteGoal(this.person, goal.id);
-				await this.render();
-			}
+		deleteBtn.addEventListener('click', () => {
+			new ConfirmModal(
+				this.app,
+				`Delete goal "${goal.title}"?`,
+				async () => {
+					await this.goalsManager.deleteGoal(this.person, goal.id);
+					await this.render();
+				},
+				{title: 'Delete goal', confirmText: 'Delete', isDestructive: true}
+			).open();
 		});
 	}
 

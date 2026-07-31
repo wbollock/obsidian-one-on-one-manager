@@ -7,6 +7,7 @@ import {PersonProfileModal} from './person-profile-modal';
 import {CreateMeetingModal} from './create-meeting-modal';
 import {AgendaItemModal} from './agenda-item-modal';
 import {PersonPickerModal} from './person-picker-modal';
+import {ConfirmModal} from './confirm-modal';
 
 export const DASHBOARD_VIEW_TYPE = 'one-on-one-dashboard';
 
@@ -447,14 +448,18 @@ export class DashboardView extends ItemView {
 			cls: 'person-action-btn-small person-action-btn-delete',
 			attr: {title: 'Delete person'}
 		});
-		deleteBtn.addEventListener('click', async (e) => {
+		deleteBtn.addEventListener('click', (e) => {
 			e.stopPropagation();
-			const confirmed = confirm(`Are you sure you want to delete ${person}? This will only remove the profile, not the 1:1 meeting notes.`);
-			if (confirmed) {
-				await this.plugin.peopleManager.deletePersonProfile(person);
-				new Notice(`Deleted ${person}`);
-				await this.render();
-			}
+			new ConfirmModal(
+				this.app,
+				`Are you sure you want to delete ${person}? This will only remove the profile, not the 1:1 meeting notes.`,
+				async () => {
+					await this.plugin.peopleManager.deletePersonProfile(person);
+					new Notice(`Deleted ${person}`);
+					await this.render();
+				},
+				{title: 'Delete person', confirmText: 'Delete', isDestructive: true}
+			).open();
 		});
 		}
 	}
