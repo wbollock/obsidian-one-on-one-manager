@@ -569,6 +569,6 @@ ${this.formatGoalsAsMarkdown(goals)}
 	 * Generate a unique ID for goals, check-ins, etc.
 	 */
 	generateId(): string {
-		return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+		return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
 	}
 }

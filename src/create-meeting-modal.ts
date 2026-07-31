@@ -231,7 +231,7 @@ export class CreateMeetingModal extends Modal {
 				return match[1];
 			}
 		} catch (error) {
-			console.log('Could not read template file, using settings:', error);
+			console.debug('Could not read template file, using settings:', error);
 		}
 
 		return this.plugin.settings.meetingTemplate;

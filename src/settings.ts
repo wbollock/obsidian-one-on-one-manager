@@ -89,8 +89,6 @@ export class OneOnOneSettingTab extends PluginSettingTab {
 
 		containerEl.empty();
 
-		new Setting(containerEl).setName('1:1 Manager settings').setHeading();
-
 		new Setting(containerEl)
 			.setName('1:1 Notes Folder')
 			.setDesc('Where to store 1:1 meeting notes')
@@ -204,7 +202,7 @@ ${this.plugin.settings.meetingTemplate}
 					templateFile = await this.app.vault.create(templatePath, templateContent);
 				} catch (error) {
 					// If file already exists, just try to get it again
-					console.log('File creation note:', error);
+					console.debug('File creation note:', error);
 					templateFile = this.app.vault.getAbstractFileByPath(templatePath);
 					if (templateFile) {
 						// Update the existing file
