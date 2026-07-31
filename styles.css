@@ -99,9 +99,7 @@
 }
 
 .person-card {
-	padding: 8px 10px;
 	border-radius: 4px;
-	cursor: pointer;
 	transition: background 0.15s;
 	border: 1px solid transparent;
 }
@@ -113,21 +111,63 @@
 
 .person-header {
 	display: flex;
-	flex-direction: column;
-	gap: 2px;
-	margin-bottom: 0;
-	border-bottom: none;
-	padding-bottom: 0;
+	align-items: flex-start;
+	gap: 4px;
+	padding: 4px 6px;
+	cursor: pointer;
 }
 
-.person-header strong {
+.person-collapse-icon {
+	display: flex;
+	align-items: center;
+	flex-shrink: 0;
+	color: var(--text-faint);
+	margin-top: 2px;
+	transition: transform 0.15s ease;
+}
+
+.person-collapse-icon svg {
+	width: 14px;
+	height: 14px;
+}
+
+.person-card.is-expanded .person-collapse-icon {
+	transform: rotate(90deg);
+}
+
+.person-name-wrap {
+	display: flex;
+	flex-direction: column;
+	gap: 1px;
+	min-width: 0;
+}
+
+.person-name {
 	font-size: 0.9em;
+	font-weight: 600;
 	color: var(--text-normal);
+	cursor: pointer;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.person-name:hover {
+	color: var(--text-accent);
 }
 
 .person-meta {
 	font-size: 0.75em;
 	color: var(--text-muted);
+}
+
+.person-details {
+	display: none;
+	padding: 0 6px 6px 24px;
+}
+
+.person-card.is-expanded .person-details {
+	display: block;
 }
 
 .person-role {

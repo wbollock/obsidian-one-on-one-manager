@@ -1,17 +1,19 @@
 // ABOUTME: Dashboard view showing 1:1 analytics and visualizations
 // ABOUTME: Displays meeting frequency, action items, and mood trends
-import {ItemView, WorkspaceLeaf, Notice} from 'obsidian';
+import {ItemView, WorkspaceLeaf, Notice, setIcon} from 'obsidian';
 import OneOnOneManager from './main';
 import {MeetingAnalyzer} from './analyzer';
 import {PersonProfileModal} from './person-profile-modal';
 import {CreateMeetingModal} from './create-meeting-modal';
 import {AgendaItemModal} from './agenda-item-modal';
+import {PersonPickerModal} from './person-picker-modal';
 
 export const DASHBOARD_VIEW_TYPE = 'one-on-one-dashboard';
 
 export class DashboardView extends ItemView {
 	plugin: OneOnOneManager;
 	analyzer: MeetingAnalyzer;
+	private expandedPeople: Set<string> = new Set();
 
 	constructor(leaf: WorkspaceLeaf, plugin: OneOnOneManager) {
 		super(leaf);
@@ -46,16 +48,50 @@ export class DashboardView extends ItemView {
 
 		const contentEl = container.createEl('div', {cls: 'one-on-one-dashboard'});
 
+		const meetings = await this.analyzer.getAllMeetings();
+		const peopleWithMeetings = await this.analyzer.getAllPeople();
+		const profiles = await this.plugin.peopleManager.getAllPeople();
+
+		// Merge people from meetings and profiles
+		const allPeopleSet = new Set<string>();
+		for (const person of peopleWithMeetings) {
+			allPeopleSet.add(person);
+		}
+		for (const profile of profiles) {
+			allPeopleSet.add(profile.name);
+		}
+		const people = Array.from(allPeopleSet).sort();
+
 		const headerDiv = contentEl.createEl('div', {cls: 'dashboard-header'});
 		headerDiv.createEl('h2', {text: '1:1 Dashboard', cls: 'dashboard-title'});
-		
+
 		const actionsDiv = headerDiv.createEl('div', {cls: 'dashboard-actions'});
-		
+
+		const quickCreateBtn = actionsDiv.createEl('button', {
+			cls: 'dashboard-action-btn clickable-icon',
+			attr: {title: 'New 1:1', 'aria-label': 'New 1:1'}
+		});
+		setIcon(quickCreateBtn, 'calendar-plus');
+		quickCreateBtn.addEventListener('click', () => {
+			if (people.length === 0) {
+				new Notice('Add a direct report first');
+				return;
+			}
+			new PersonPickerModal(this.app, people, (person) => {
+				const modal = new CreateMeetingModal(this.app, this.plugin, async () => {
+					await new Promise(resolve => setTimeout(resolve, 100));
+					await this.render();
+				});
+				modal.person = person;
+				modal.open();
+			}).open();
+		});
+
 		const addPersonBtn = actionsDiv.createEl('button', {
 			cls: 'dashboard-action-btn clickable-icon',
 			attr: {title: 'Add person', 'aria-label': 'Add person'}
 		});
-		addPersonBtn.textContent = '+';
+		setIcon(addPersonBtn, 'user-plus');
 		addPersonBtn.addEventListener('click', () => {
 			new PersonProfileModal(this.app, this.plugin, null, async (profile) => {
 				try {
@@ -74,7 +110,7 @@ export class DashboardView extends ItemView {
 			cls: 'dashboard-action-btn clickable-icon',
 			attr: {title: 'Refresh', 'aria-label': 'Refresh'}
 		});
-		refreshBtn.textContent = '↻';
+		setIcon(refreshBtn, 'refresh-cw');
 		refreshBtn.addEventListener('click', async () => {
 			await this.render();
 			new Notice('Dashboard refreshed');
@@ -84,7 +120,7 @@ export class DashboardView extends ItemView {
 			cls: 'dashboard-action-btn clickable-icon',
 			attr: {title: 'Edit 1:1 template', 'aria-label': 'Edit 1:1 template'}
 		});
-		editTemplateBtn.textContent = '✎';
+		setIcon(editTemplateBtn, 'pencil');
 		editTemplateBtn.addEventListener('click', async () => {
 			try {
 				await this.plugin.settingTab.openTemplateInNote();
@@ -93,20 +129,6 @@ export class DashboardView extends ItemView {
 				new Notice('❌ Error opening template. Check console for details.');
 			}
 		});
-
-		const meetings = await this.analyzer.getAllMeetings();
-		const peopleWithMeetings = await this.analyzer.getAllPeople();
-		const profiles = await this.plugin.peopleManager.getAllPeople();
-		
-		// Merge people from meetings and profiles
-		const allPeopleSet = new Set<string>();
-		for (const person of peopleWithMeetings) {
-			allPeopleSet.add(person);
-		}
-		for (const profile of profiles) {
-			allPeopleSet.add(profile.name);
-		}
-		const people = Array.from(allPeopleSet).sort();
 
 		await this.renderOverview(contentEl, meetings, people);
 		await this.renderPeopleSection(contentEl, people, profiles);
@@ -196,21 +218,46 @@ export class DashboardView extends ItemView {
 			const profile = profiles.find(p => p.name === person);
 			
 			const card = list.createEl('div', {cls: 'person-card'});
+			if (this.expandedPeople.has(person)) {
+				card.addClass('is-expanded');
+			}
 
 			const header = card.createEl('div', {cls: 'person-header'});
-			header.createEl('strong', {text: person});
-			
-			const meta = header.createEl('span', {cls: 'person-meta'});
+
+			const collapseIcon = header.createEl('span', {cls: 'person-collapse-icon'});
+			setIcon(collapseIcon, 'chevron-right');
+
+			const nameWrap = header.createEl('div', {cls: 'person-name-wrap'});
+			const nameEl = nameWrap.createEl('div', {text: person, cls: 'person-name'});
+
+			const meta = nameWrap.createEl('div', {cls: 'person-meta'});
 			meta.textContent = `${stats.meetingCount} mtgs · ${stats.lastMeeting}`;
 			if (stats.actionItemCompletion > 0) {
 				meta.textContent += ` · ${stats.actionItemCompletion} open`;
 			}
 
+			nameEl.addEventListener('click', (e) => {
+				e.stopPropagation();
+				this.plugin.openTimelineView(person);
+			});
+
+			header.addEventListener('click', () => {
+				const expanded = card.hasClass('is-expanded');
+				card.toggleClass('is-expanded', !expanded);
+				if (expanded) {
+					this.expandedPeople.delete(person);
+				} else {
+					this.expandedPeople.add(person);
+				}
+			});
+
+			const details = card.createEl('div', {cls: 'person-details'});
+
 		// Show agenda items
 		if (profile?.agendaItems && profile.agendaItems.length > 0) {
 			const pendingItems = profile.agendaItems.filter((item: any) => !item.completed);
 			if (pendingItems.length > 0) {
-				const agendaSection = card.createEl('div', {cls: 'person-agenda-section'});
+				const agendaSection = details.createEl('div', {cls: 'person-agenda-section'});
 				const agendaHeader = agendaSection.createEl('div', {cls: 'person-agenda-header'});
 				agendaHeader.createEl('span', {text: '📋 Agenda Items', cls: 'person-agenda-title'});
 				agendaHeader.createEl('span', {text: `(${pendingItems.length})`, cls: 'person-agenda-count'});
@@ -273,7 +320,7 @@ export class DashboardView extends ItemView {
 			}
 		}
 
-		const actionsDiv = card.createEl('div', {cls: 'person-actions'});
+		const actionsDiv = details.createEl('div', {cls: 'person-actions'});
 		
 		const create11Btn = actionsDiv.createEl('button', {
 			text: '+ New 1:1',
@@ -299,18 +346,18 @@ export class DashboardView extends ItemView {
 			e.stopPropagation();
 			new AgendaItemModal(this.app, this.plugin, person, async (newItem) => {
 				// Dynamically add the new item to the card without refreshing
-				let agendaSection = card.querySelector('.person-agenda-section') as HTMLElement;
-				
+				let agendaSection = details.querySelector('.person-agenda-section') as HTMLElement;
+
 				if (!agendaSection) {
 					// Create agenda section if it doesn't exist
-					agendaSection = card.createEl('div', {cls: 'person-agenda-section'});
+					agendaSection = details.createEl('div', {cls: 'person-agenda-section'});
 					const agendaHeader = agendaSection.createEl('div', {cls: 'person-agenda-header'});
 					agendaHeader.createEl('span', {text: '📋 Agenda Items', cls: 'person-agenda-title'});
 					agendaHeader.createEl('span', {text: '(1)', cls: 'person-agenda-count'});
 					agendaSection.createEl('div', {cls: 'person-agenda-list'});
-					
+
 					// Insert before actions div
-					card.insertBefore(agendaSection, actionsDiv);
+					details.insertBefore(agendaSection, actionsDiv);
 				} else {
 					// Update count
 					const countEl = agendaSection.querySelector('.person-agenda-count');
@@ -409,10 +456,6 @@ export class DashboardView extends ItemView {
 				await this.render();
 			}
 		});
-
-			card.addEventListener('click', () => {
-				this.plugin.openTimelineView(person);
-			});
 		}
 	}
 
