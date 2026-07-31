@@ -540,6 +540,8 @@ export class DashboardView extends ItemView {
 
 	private async handleActionItemToggle(filePath: string, lineIndex: number): Promise<void> {
 		await this.analyzer.toggleActionItem(filePath, lineIndex);
+		// Give metadataCache time to re-index the file we just wrote before re-reading it.
+		await new Promise(resolve => setTimeout(resolve, 100));
 		await this.render();
 	}
 
