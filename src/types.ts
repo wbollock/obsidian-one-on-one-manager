@@ -17,6 +17,7 @@ export interface ActionItem {
 	completed: boolean;
 	assignee?: string;
 	dueDate?: string;
+	lineIndex: number;
 }
 
 export interface PrivateManagerNotes {

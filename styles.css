@@ -386,7 +386,19 @@
 .action-items-list {
 	display: flex;
 	flex-direction: column;
-	gap: 4px;
+	gap: 12px;
+}
+
+.action-items-group {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.action-items-group-title {
+	font-size: 0.8em;
+	font-weight: 600;
+	color: var(--text-muted);
 }
 
 .action-item {

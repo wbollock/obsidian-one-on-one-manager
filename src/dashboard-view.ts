@@ -484,30 +484,49 @@ export class DashboardView extends ItemView {
 		section.createEl('h3', {text: 'Open action items', cls: 'dashboard-section-title'});
 
 		const allActions = meetings.flatMap(m =>
-			m.actionItems.map(a => ({...a, person: m.person, meetingDate: m.date}))
+			m.actionItems.map(a => ({...a, person: m.person, meetingDate: m.date, filePath: m.filePath}))
 		);
 
 		const incomplete = allActions.filter(a => !a.completed);
-		
+
 		if (incomplete.length === 0) {
 			section.createEl('p', {text: '🎉 all done!', cls: 'empty-state-text'});
 			return;
 		}
 
+		const shown = incomplete.slice(0, 10);
+		const shownSet = new Set(shown);
+
+		const byPerson = new Map<string, typeof shown>();
+		for (const action of shown) {
+			const personActions = byPerson.get(action.person) ?? [];
+			personActions.push(action);
+			byPerson.set(action.person, personActions);
+		}
+
 		const list = section.createEl('div', {cls: 'action-items-list'});
 
-		for (const action of incomplete.slice(0, 10)) {
-			const item = list.createEl('div', {cls: 'action-item'});
-			
-			const checkbox = item.createEl('input', {type: 'checkbox'});
-			checkbox.checked = false;
-			
-			item.createEl('span', {text: action.text, cls: 'action-text'});
-			
-			const meta = item.createEl('span', {cls: 'action-meta'});
-			meta.createEl('span', {text: action.person});
-			if (action.dueDate) {
-				meta.createEl('span', {text: ` • Due: ${action.dueDate}`});
+		for (const person of Array.from(byPerson.keys()).sort()) {
+			const personActions = byPerson.get(person)?.filter(a => shownSet.has(a)) ?? [];
+			if (personActions.length === 0) continue;
+
+			const group = list.createEl('div', {cls: 'action-items-group'});
+			group.createEl('div', {text: person, cls: 'action-items-group-title'});
+
+			for (const action of personActions) {
+				const item = group.createEl('div', {cls: 'action-item'});
+
+				const checkbox = item.createEl('input', {type: 'checkbox'});
+				checkbox.checked = false;
+				checkbox.addEventListener('click', () => {
+					void this.handleActionItemToggle(action.filePath, action.lineIndex);
+				});
+
+				item.createEl('span', {text: action.text, cls: 'action-text'});
+
+				if (action.dueDate) {
+					item.createEl('span', {text: `Due ${action.dueDate}`, cls: 'action-meta'});
+				}
 			}
 		}
 
@@ -517,6 +536,11 @@ export class DashboardView extends ItemView {
 				cls: 'action-overflow'
 			});
 		}
+	}
+
+	private async handleActionItemToggle(filePath: string, lineIndex: number): Promise<void> {
+		await this.analyzer.toggleActionItem(filePath, lineIndex);
+		await this.render();
 	}
 
 	async onClose(): Promise<void> {

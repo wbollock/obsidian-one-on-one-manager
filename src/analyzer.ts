@@ -85,12 +85,15 @@ export class MeetingAnalyzer {
 		const items: ActionItem[] = [];
 		const lines = content.split('\n');
 
-		for (const line of lines) {
+		for (let i = 0; i < lines.length; i++) {
+			const line = lines[i];
+			if (line === undefined) continue;
+
 			const todoMatch = line.match(/^[\s-]*\[([x ])\]\s+(.+)$/i);
 			if (todoMatch && todoMatch[1] && todoMatch[2]) {
 				const completed = todoMatch[1].toLowerCase() === 'x';
 				const text = todoMatch[2].trim();
-				
+
 				const dueDateMatch = text.match(/📅\s*(\d{4}-\d{2}-\d{2})/);
 				const assigneeMatch = text.match(/@(\w+)/);
 
@@ -98,12 +101,31 @@ export class MeetingAnalyzer {
 					text: text,
 					completed,
 					dueDate: dueDateMatch?.[1],
-					assignee: assigneeMatch?.[1]
+					assignee: assigneeMatch?.[1],
+					lineIndex: i
 				});
 			}
 		}
 
 		return items;
+	}
+
+	async toggleActionItem(filePath: string, lineIndex: number): Promise<void> {
+		const file = this.app.vault.getAbstractFileByPath(filePath);
+		if (!(file instanceof TFile)) return;
+
+		const content = await this.app.vault.read(file);
+		const lines = content.split('\n');
+		const line = lines[lineIndex];
+		if (line === undefined) return;
+
+		const todoMatch = line.match(/^([\s-]*\[)([x ])(\]\s+.+)$/i);
+		if (!todoMatch || !todoMatch[1] || !todoMatch[2] || !todoMatch[3]) return;
+
+		const toggled = todoMatch[2].toLowerCase() === 'x' ? ' ' : 'x';
+		lines[lineIndex] = `${todoMatch[1]}${toggled}${todoMatch[3]}`;
+
+		await this.app.vault.modify(file, lines.join('\n'));
 	}
 
 	async getPersonStats(person: string): Promise<PersonStats> {
