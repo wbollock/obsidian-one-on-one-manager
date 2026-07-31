@@ -35,7 +35,7 @@ export class CreateMeetingModal extends Modal {
 		contentEl.empty();
 		contentEl.addClass('one-on-one-modal');
 
-		contentEl.createEl('h2', {text: 'Create 1:1 Meeting Note'});
+		contentEl.createEl('h2', {text: 'Create 1:1 meeting note'});
 
 		const description = contentEl.createEl('p', {cls: 'modal-description'});
 		description.setText('Create a new 1:1 meeting note with structured sections for discussion points, action items, and private notes.');
@@ -48,7 +48,7 @@ export class CreateMeetingModal extends Modal {
 		personLabel.createEl('span', {text: ' *', cls: 'required-indicator'});
 		const personInput = personDiv.createEl('input', {type: 'text'});
 		personInput.value = this.person;
-		personInput.placeholder = 'e.g., John Smith';
+		personInput.placeholder = 'E.g., john smith';
 		personInput.addEventListener('input', () => {
 			this.person = personInput.value;
 		});
@@ -68,19 +68,19 @@ export class CreateMeetingModal extends Modal {
 
 		// Topics field
 		const topicsDiv = form.createEl('div', {cls: 'form-field'});
-		topicsDiv.createEl('label', {text: 'Discussion Topics (Optional)'});
+		topicsDiv.createEl('label', {text: 'Discussion topics (optional)'});
 		const topicsInput = topicsDiv.createEl('input', {type: 'text'});
 		topicsInput.value = this.topics;
-		topicsInput.placeholder = 'e.g., Career goals, Current project, Team feedback';
+		topicsInput.placeholder = 'E.g., career goals, current project, team feedback';
 		const topicsHint = topicsDiv.createEl('small', {cls: 'field-hint'});
-		topicsHint.setText('💡 Separate multiple topics with commas');
+		topicsHint.setText('💡 separate multiple topics with commas');
 		topicsInput.addEventListener('input', () => {
 			this.topics = topicsInput.value;
 		});
 
 		const buttonDiv = form.createEl('div', {cls: 'form-buttons'});
 		
-		const createBtn = buttonDiv.createEl('button', {text: 'Create 1:1 Note', type: 'submit', cls: 'mod-cta'});
+		const createBtn = buttonDiv.createEl('button', {text: 'Create 1:1 note', type: 'submit', cls: 'mod-cta'});
 		createBtn.addEventListener('click', (e) => {
 			e.preventDefault();
 			void this.handleCreateClick(createBtn);
@@ -105,18 +105,18 @@ export class CreateMeetingModal extends Modal {
 		createBtn.setText('Creating...');
 		await this.createMeeting();
 		createBtn.disabled = false;
-		createBtn.setText('Create 1:1 Note');
+		createBtn.setText('Create 1:1 note');
 	}
 
 	async createMeeting(): Promise<void> {
 		// Validation
 		if (!this.person.trim()) {
-			new Notice('⚠️ Please enter a person name', 3000);
+			new Notice('⚠️ please enter a person name', 3000);
 			return;
 		}
 
 		if (!this.date) {
-			new Notice('⚠️ Please select a date', 3000);
+			new Notice('⚠️ please select a date', 3000);
 			return;
 		}
 
@@ -296,7 +296,7 @@ date: ${date}
 			for (const topic of topics) {
 				topicsList += `  - ${topic}\n`;
 			}
-			const topicsConditional = new RegExp('\\{\\{#if topics\\}\\}topics:\\n\\{\\{#each topics\\}\\}  - \\{\\{this\\}\\}\\n\\{\\{/each\\}\\}\\{\\{/if\\}\\}', 'g');
+			const topicsConditional = new RegExp('\\{\\{#if topics\\}\\}topics:\\n\\{\\{#each topics\\}\\} {2}- \\{\\{this\\}\\}\\n\\{\\{/each\\}\\}\\{\\{/if\\}\\}', 'g');
 			userTemplate = userTemplate.replace(topicsConditional, `topics:\n${topicsList}`);
 		} else {
 			const topicsConditional = new RegExp('\\{\\{#if topics\\}\\}[\\s\\S]*?\\{\\{/if\\}\\}', 'g');

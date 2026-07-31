@@ -90,7 +90,7 @@ export class OneOnOneSettingTab extends PluginSettingTab {
 		containerEl.empty();
 
 		new Setting(containerEl)
-			.setName('1:1 Notes Folder')
+			.setName('1:1 notes folder')
 			.setDesc('Where to store 1:1 meeting notes')
 			.addText(text => text
 				.setPlaceholder('1-1s')
@@ -101,7 +101,7 @@ export class OneOnOneSettingTab extends PluginSettingTab {
 				}));
 
 		new Setting(containerEl)
-			.setName('People Profiles Folder')
+			.setName('People profiles folder')
 			.setDesc('Where to store person profile information')
 			.addText(text => text
 				.setPlaceholder('1-1s/people')
@@ -125,7 +125,7 @@ export class OneOnOneSettingTab extends PluginSettingTab {
 		const templateButtons = containerEl.createEl('div', {cls: 'template-buttons'});
 
 		const openTemplateBtn = templateButtons.createEl('button', {
-			text: '📝 Edit Template',
+			text: '📝 edit template',
 			cls: 'mod-cta'
 		});
 		openTemplateBtn.addEventListener('click', () => {
@@ -133,7 +133,7 @@ export class OneOnOneSettingTab extends PluginSettingTab {
 		});
 
 		new Setting(containerEl)
-			.setName('Template Fallback')
+			.setName('Template fallback')
 			.setDesc('This is only used if the template file does not exist. Edit the template file above for changes to apply automatically.')
 			.addTextArea(text => {
 				text.setPlaceholder('Enter your template...')
@@ -228,7 +228,7 @@ ${this.plugin.settings.meetingTemplate}
 		const templateFile = this.app.vault.getAbstractFileByPath(templatePath);
 
 		if (!(templateFile instanceof TFile)) {
-			new Notice('Template file not found. Click "Edit template in note" first to create it.');
+			new Notice('Template file not found. Click "edit template in note" first to create it.');
 			return;
 		}
 
@@ -240,7 +240,7 @@ ${this.plugin.settings.meetingTemplate}
 			this.plugin.settings.meetingTemplate = match[1];
 			await this.plugin.saveSettings();
 			this.display(); // Refresh settings UI
-			new Notice('✅ Template loaded successfully!');
+			new Notice('✅ template loaded successfully!');
 		} else {
 			new Notice('Could not parse template. Make sure the template is between the --- markers.');
 		}

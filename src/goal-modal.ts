@@ -75,7 +75,7 @@ export class GoalModal extends Modal {
 			.setName('Goal title')
 			.setDesc('A clear, concise title for this goal')
 			.addText(text => text
-				.setPlaceholder('e.g., Lead the API redesign project')
+				.setPlaceholder('E.g., lead the API redesign project')
 				.setValue(this.title)
 				.onChange(value => this.title = value)
 			);
@@ -97,13 +97,13 @@ export class GoalModal extends Modal {
 			.setName('Category')
 			.setDesc('What type of goal is this?')
 			.addDropdown(dropdown => dropdown
-				.addOption('Career', 'Career Growth')
-				.addOption('Technical', 'Technical Skill')
-				.addOption('Project', 'Project/Delivery')
-				.addOption('Performance', 'Performance/Impact')
-				.addOption('Learning', 'Learning/Development')
-				.addOption('Team', 'Team/Collaboration')
-				.addOption('Personal', 'Personal Development')
+				.addOption('Career', 'Career growth')
+				.addOption('Technical', 'Technical skill')
+				.addOption('Project', 'Project/delivery')
+				.addOption('Performance', 'Performance/impact')
+				.addOption('Learning', 'Learning/development')
+				.addOption('Team', 'Team/collaboration')
+				.addOption('Personal', 'Personal development')
 				.setValue(this.category)
 				.onChange(value => this.category = value as Goal['category'])
 			);
@@ -113,11 +113,11 @@ export class GoalModal extends Modal {
 			.setName('Timeframe')
 			.setDesc('When should this goal be achieved?')
 			.addDropdown(dropdown => dropdown
-				.addOption('Q1', 'Q1 (Jan-Mar)')
-				.addOption('Q2', 'Q2 (Apr-Jun)')
-				.addOption('Q3', 'Q3 (Jul-Sep)')
-				.addOption('Q4', 'Q4 (Oct-Dec)')
-				.addOption('6-month', '6 Months')
+				.addOption('Q1', 'Q1 (jan-mar)')
+				.addOption('Q2', 'Q2 (apr-jun)')
+				.addOption('Q3', 'Q3 (jul-sep)')
+				.addOption('Q4', 'Q4 (oct-dec)')
+				.addOption('6-month', '6 months')
 				.addOption('Annual', 'Annual')
 				.addOption('Custom', 'Custom')
 				.setValue(this.timeframe)
@@ -143,7 +143,7 @@ export class GoalModal extends Modal {
 		new Setting(form)
 			.setName('Start date')
 			.addText(text => text
-				.setPlaceholder('YYYY-MM-DD')
+				.setPlaceholder('Yyyy-mm-dd')
 				.setValue(this.startDate)
 				.onChange(value => this.startDate = value)
 			).then(setting => {
@@ -155,7 +155,7 @@ export class GoalModal extends Modal {
 			.setName('Target date')
 			.setDesc('When should this goal be completed?')
 			.addText(text => text
-				.setPlaceholder('YYYY-MM-DD')
+				.setPlaceholder('Yyyy-mm-dd')
 				.setValue(this.targetDate)
 				.onChange(value => this.targetDate = value)
 			).then(setting => {
@@ -164,7 +164,7 @@ export class GoalModal extends Modal {
 
 		// Key Results section
 		const krSection = form.createEl('div', {cls: 'key-results-section'});
-		krSection.createEl('h3', {text: 'Key Results (Optional)'});
+		krSection.createEl('h3', {text: 'Key results (optional)'});
 		krSection.createEl('p', {
 			text: 'Break this goal into measurable key results',
 			cls: 'setting-item-description'
@@ -174,7 +174,7 @@ export class GoalModal extends Modal {
 		this.renderKeyResults(krList);
 
 		const addKrBtn = krSection.createEl('button', {
-			text: '+ Add Key Result',
+			text: '+ add key result',
 			cls: 'add-key-result-btn'
 		});
 		addKrBtn.addEventListener('click', () => {
@@ -276,22 +276,22 @@ export class GoalModal extends Modal {
 	private async handleSave(): Promise<void> {
 		// Validation
 		if (!this.title.trim()) {
-			new Notice('⚠️ Please enter a goal title', 3000);
+			new Notice('⚠️ please enter a goal title', 3000);
 			return;
 		}
 
 		if (!this.description.trim()) {
-			new Notice('⚠️ Please enter a goal description', 3000);
+			new Notice('⚠️ please enter a goal description', 3000);
 			return;
 		}
 
 		if (!this.startDate) {
-			new Notice('⚠️ Please select a start date', 3000);
+			new Notice('⚠️ please select a start date', 3000);
 			return;
 		}
 
 		if (!this.targetDate) {
-			new Notice('⚠️ Please select a target date', 3000);
+			new Notice('⚠️ please select a target date', 3000);
 			return;
 		}
 
@@ -299,7 +299,7 @@ export class GoalModal extends Modal {
 		const start = new Date(this.startDate);
 		const target = new Date(this.targetDate);
 		if (target <= start) {
-			new Notice('⚠️ Target date must be after start date', 3000);
+			new Notice('⚠️ target date must be after start date', 3000);
 			return;
 		}
 

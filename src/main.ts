@@ -39,13 +39,13 @@ export default class OneOnOneManager extends Plugin {
 			(leaf) => new GoalsView(leaf, this, '')
 		);
 
-		this.addRibbonIcon('users', 'Open 1:1 Dashboard', () => {
+		this.addRibbonIcon('users', 'Open 1:1 dashboard', () => {
 			void this.openDashboard();
 		});
 
 		this.addCommand({
 			id: 'create-one-on-one',
-			name: 'Create 1:1 Meeting Note',
+			name: 'Create 1:1 meeting note',
 			callback: () => {
 				new CreateMeetingModal(this.app, this).open();
 			}
@@ -53,7 +53,7 @@ export default class OneOnOneManager extends Plugin {
 
 		this.addCommand({
 			id: 'add-person',
-			name: 'Add Person Profile',
+			name: 'Add person profile',
 			callback: () => {
 				new PersonProfileModal(this.app, this, null, async (profile) => {
 					await this.peopleManager.savePersonProfile(profile);
@@ -63,7 +63,7 @@ export default class OneOnOneManager extends Plugin {
 
 		this.addCommand({
 			id: 'open-dashboard',
-			name: 'Open Dashboard',
+			name: 'Open dashboard',
 			callback: () => {
 				void this.openDashboard();
 			}
@@ -71,20 +71,20 @@ export default class OneOnOneManager extends Plugin {
 
 		this.addCommand({
 			id: 'edit-meeting-template',
-			name: 'Edit 1:1 Meeting Template',
+			name: 'Edit 1:1 meeting template',
 			callback: async () => {
 				try {
 					await this.settingTab.openTemplateInNote();
 				} catch (error) {
 					console.error('Error opening template:', error);
-					new Notice('❌ Error opening template. Check console for details.');
+					new Notice('❌ error opening template. Check console for details.');
 				}
 			}
 		});
 
 		this.addCommand({
 			id: 'add-agenda-item',
-			name: 'Add Agenda Item for Next 1:1',
+			name: 'Add agenda item for next 1:1',
 			callback: async () => {
 				const people = await this.peopleManager.getAllPeople();
 				if (people.length === 0) {

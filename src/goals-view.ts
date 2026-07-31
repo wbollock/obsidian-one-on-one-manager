@@ -79,7 +79,7 @@ export class GoalsView extends ItemView {
 		});
 
 		const addGoalBtn = toolbar.createEl('button', {
-			text: '+ New Goal',
+			text: '+ new goal',
 			cls: 'mod-cta'
 		});
 		addGoalBtn.addEventListener('click', () => {
@@ -92,7 +92,7 @@ export class GoalsView extends ItemView {
 		// Check if viewing previous year - offer archive option
 		if (this.selectedYear < currentYear) {
 			const archiveBtn = toolbar.createEl('button', {
-				text: '📦 Archive This Year',
+				text: '📦 archive this year',
 				cls: 'archive-year-btn'
 			});
 			archiveBtn.addEventListener('click', () => {
@@ -220,7 +220,7 @@ export class GoalsView extends ItemView {
 		// Key Results
 		if (goal.keyResults && goal.keyResults.length > 0) {
 			const krSection = container.createEl('div', {cls: 'key-results'});
-			krSection.createEl('strong', {text: 'Key Results:'});
+			krSection.createEl('strong', {text: 'Key results:'});
 			const krList = krSection.createEl('ul');
 			goal.keyResults.forEach(kr => {
 				const li = krList.createEl('li');
@@ -232,7 +232,7 @@ export class GoalsView extends ItemView {
 		// Blockers
 		if (goal.blockers && goal.blockers.length > 0) {
 			const blockersSection = container.createEl('div', {cls: 'goal-blockers'});
-			blockersSection.createEl('strong', {text: '🚫 Blockers:'});
+			blockersSection.createEl('strong', {text: '🚫 blockers:'});
 			const blockersList = blockersSection.createEl('ul');
 			goal.blockers.forEach(b => {
 				blockersList.createEl('li', {text: b});
@@ -242,7 +242,7 @@ export class GoalsView extends ItemView {
 		// Actions
 		const actions = container.createEl('div', {cls: 'goal-actions'});
 
-		const editBtn = actions.createEl('button', {text: '✏️ Edit', cls: 'goal-action-btn'});
+		const editBtn = actions.createEl('button', {text: '✏️ edit', cls: 'goal-action-btn'});
 		editBtn.addEventListener('click', () => {
 			new GoalModal(this.app, this.plugin, this.person, goal, async () => {
 				await new Promise(resolve => setTimeout(resolve, 100));
@@ -250,13 +250,13 @@ export class GoalsView extends ItemView {
 			}).open();
 		});
 
-		const checkInBtn = actions.createEl('button', {text: '📝 Check-in', cls: 'goal-action-btn'});
+		const checkInBtn = actions.createEl('button', {text: '📝 check-in', cls: 'goal-action-btn'});
 		checkInBtn.addEventListener('click', () => {
 			// TODO: Open check-in modal
 			new Notice('Check-in feature coming soon!');
 		});
 
-		const deleteBtn = actions.createEl('button', {text: '🗑️ Delete', cls: 'goal-action-btn-danger'});
+		const deleteBtn = actions.createEl('button', {text: '🗑️ delete', cls: 'goal-action-btn-danger'});
 		deleteBtn.addEventListener('click', () => {
 			new ConfirmModal(
 				this.app,
@@ -293,7 +293,7 @@ export class GoalsView extends ItemView {
 
 	private renderCarryoverSection(container: HTMLElement, incompleteGoals: Goal[]): void {
 		const section = container.createEl('div', {cls: 'carryover-section'});
-		section.createEl('h2', {text: '🔄 Carry Over to Current Year?'});
+		section.createEl('h2', {text: '🔄 carry over to current year?'});
 		
 		const description = section.createEl('p');
 		description.setText(`You have ${incompleteGoals.length} incomplete goals from ${this.selectedYear}. Would you like to carry them over to ${new Date().getFullYear()}?`);

@@ -19,7 +19,7 @@ export class ReflectionPromptModal extends Modal {
 		const {contentEl} = this;
 		contentEl.empty();
 
-		contentEl.createEl('h2', {text: '📝 Post-Meeting Reflection'});
+		contentEl.createEl('h2', {text: '📝 post-meeting reflection'});
 		contentEl.createEl('p', {
 			text: `Take a moment to reflect on your 1:1 with ${this.person}`,
 			cls: 'reflection-subtitle'
@@ -58,14 +58,14 @@ export class ReflectionPromptModal extends Modal {
 
 		const infoDiv = contentEl.createEl('div', {cls: 'reflection-info'});
 		infoDiv.createEl('p', {
-			text: '💡 These reflections go in the "🔒 Private Manager Notes" section of your 1:1 note.',
+			text: '💡 these reflections go in the "🔒 private manager notes" section of your 1:1 note.',
 			cls: 'reflection-info-text'
 		});
 
 		const buttonDiv = contentEl.createEl('div', {cls: 'form-buttons'});
 		
 		const addNotesBtn = buttonDiv.createEl('button', {
-			text: 'Add Reflections Now',
+			text: 'Add reflections now',
 			type: 'button',
 			cls: 'reflection-primary-btn'
 		});
@@ -75,7 +75,7 @@ export class ReflectionPromptModal extends Modal {
 		});
 
 		const laterBtn = buttonDiv.createEl('button', {
-			text: 'Skip for Now',
+			text: 'Skip for now',
 			type: 'button'
 		});
 		laterBtn.addEventListener('click', () => {

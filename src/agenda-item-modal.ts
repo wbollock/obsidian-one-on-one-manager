@@ -33,14 +33,14 @@ export class AgendaItemModal extends Modal {
 		const textInput = textField.createEl('textarea', {
 			attr: {
 				rows: '3',
-				placeholder: 'e.g., Discuss promotion timeline, Get feedback on project X, Address workload concerns...'
+				placeholder: 'E.g., discuss promotion timeline, get feedback on project X, address workload concerns...'
 			}
 		});
 
 		const buttons = form.createEl('div', {cls: 'form-buttons'});
 		
 		const submitBtn = buttons.createEl('button', {
-			text: 'Add Item',
+			text: 'Add item',
 			type: 'submit',
 			cls: 'mod-cta'
 		});

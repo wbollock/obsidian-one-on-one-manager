@@ -77,7 +77,7 @@ export class TimelineView extends ItemView {
 
 	private async renderMeetings(container: HTMLElement, meetings: OneOnOneMeeting[]): Promise<void> {
 		const timeline = container.createEl('div', {cls: 'timeline-container'});
-		timeline.createEl('h2', {text: 'Meeting History'});
+		timeline.createEl('h2', {text: 'Meeting history'});
 
 		for (const meeting of meetings) {
 			const item = timeline.createEl('div', {cls: 'timeline-item'});
@@ -112,7 +112,7 @@ export class TimelineView extends ItemView {
 
 			if (meeting.actionItems.length > 0) {
 				const actionsDiv = content.createEl('div', {cls: 'meeting-actions'});
-				actionsDiv.createEl('strong', {text: 'Action Items:'});
+				actionsDiv.createEl('strong', {text: 'Action items:'});
 				
 				const actionsList = actionsDiv.createEl('ul', {cls: 'actions-list'});
 				for (const action of meeting.actionItems) {

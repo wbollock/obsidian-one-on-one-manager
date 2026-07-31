@@ -28,7 +28,7 @@ export class DashboardView extends ItemView {
 	}
 
 	getDisplayText(): string {
-		return '1:1 Dashboard';
+		return '1:1 dashboard';
 	}
 
 	getIcon(): string {
@@ -65,7 +65,7 @@ export class DashboardView extends ItemView {
 		const people = Array.from(allPeopleSet).sort();
 
 		const headerDiv = contentEl.createEl('div', {cls: 'dashboard-header'});
-		headerDiv.createEl('h2', {text: '1:1 Dashboard', cls: 'dashboard-title'});
+		headerDiv.createEl('h2', {text: '1:1 dashboard', cls: 'dashboard-title'});
 
 		const actionsDiv = headerDiv.createEl('div', {cls: 'dashboard-actions'});
 
@@ -103,7 +103,7 @@ export class DashboardView extends ItemView {
 					new Notice(`✓ Added ${profile.name}`);
 				} catch (error) {
 					console.error('Error adding person:', error);
-					new Notice('❌ Error adding person');
+					new Notice('❌ error adding person');
 				}
 			}).open();
 		});
@@ -146,7 +146,7 @@ export class DashboardView extends ItemView {
 			await this.plugin.settingTab.openTemplateInNote();
 		} catch (error) {
 			console.error('Error opening template from dashboard:', error);
-			new Notice('❌ Error opening template. Check console for details.');
+			new Notice('❌ error opening template. Check console for details.');
 		}
 	}
 
@@ -189,7 +189,7 @@ export class DashboardView extends ItemView {
 			
 			const emptyActions = emptyState.createEl('div', {cls: 'empty-state-actions'});
 			const addPersonBtn = emptyActions.createEl('button', {
-				text: '+ Add Person',
+				text: '+ add person',
 				cls: 'person-action-btn'
 			});
 			addPersonBtn.addEventListener('click', () => {
@@ -201,13 +201,13 @@ export class DashboardView extends ItemView {
 						new Notice(`✓ Added ${profile.name}`);
 					} catch (error) {
 						console.error('Error adding person:', error);
-						new Notice('❌ Error adding person');
+						new Notice('❌ error adding person');
 					}
 				}).open();
 			});
 			
 			const createMeetingBtn = emptyActions.createEl('button', {
-				text: '+ Create 1:1',
+				text: '+ create 1:1',
 				cls: 'person-action-btn'
 			});
 			createMeetingBtn.addEventListener('click', () => {
@@ -269,7 +269,7 @@ export class DashboardView extends ItemView {
 			if (pendingItems.length > 0) {
 				const agendaSection = details.createEl('div', {cls: 'person-agenda-section'});
 				const agendaHeader = agendaSection.createEl('div', {cls: 'person-agenda-header'});
-				agendaHeader.createEl('span', {text: '📋 Agenda Items', cls: 'person-agenda-title'});
+				agendaHeader.createEl('span', {text: '📋 agenda items', cls: 'person-agenda-title'});
 				agendaHeader.createEl('span', {text: `(${pendingItems.length})`, cls: 'person-agenda-count'});
 
 				const agendaList = agendaSection.createEl('div', {cls: 'person-agenda-list'});
@@ -336,7 +336,7 @@ export class DashboardView extends ItemView {
 		const actionsDiv = details.createEl('div', {cls: 'person-actions'});
 		
 		const create11Btn = actionsDiv.createEl('button', {
-			text: '+ New 1:1',
+			text: '+ new 1:1',
 			cls: 'person-action-btn'
 		});
 		create11Btn.addEventListener('click', (e) => {
@@ -351,7 +351,7 @@ export class DashboardView extends ItemView {
 		});
 
 		const addAgendaBtn = actionsDiv.createEl('button', {
-			text: '+ Agenda Item',
+			text: '+ agenda item',
 			cls: 'person-action-btn-small',
 			attr: {title: 'Add agenda item'}
 		});
@@ -365,7 +365,7 @@ export class DashboardView extends ItemView {
 					// Create agenda section if it doesn't exist
 					agendaSection = details.createEl('div', {cls: 'person-agenda-section'});
 					const agendaHeader = agendaSection.createEl('div', {cls: 'person-agenda-header'});
-					agendaHeader.createEl('span', {text: '📋 Agenda Items', cls: 'person-agenda-title'});
+					agendaHeader.createEl('span', {text: '📋 agenda items', cls: 'person-agenda-title'});
 					agendaHeader.createEl('span', {text: '(1)', cls: 'person-agenda-count'});
 					agendaSection.createEl('div', {cls: 'person-agenda-list'});
 
@@ -435,7 +435,7 @@ export class DashboardView extends ItemView {
 		
 
 		const goalsBtn = actionsDiv.createEl('button', {
-			text: '🎯 Goals',
+			text: '🎯 goals',
 			cls: 'person-action-btn-small',
 			attr: {title: 'View goals'}
 		});
@@ -490,7 +490,7 @@ export class DashboardView extends ItemView {
 		const incomplete = allActions.filter(a => !a.completed);
 		
 		if (incomplete.length === 0) {
-			section.createEl('p', {text: '🎉 All done!', cls: 'empty-state-text'});
+			section.createEl('p', {text: '🎉 all done!', cls: 'empty-state-text'});
 			return;
 		}
 

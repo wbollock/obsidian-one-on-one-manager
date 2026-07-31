@@ -101,7 +101,7 @@ export class GoalsManager {
 	async saveGoal(person: string, goal: Goal): Promise<void> {
 		const goalsFile = await this.getOrCreateGoalsFile(person);
 		if (!goalsFile) {
-			new Notice('❌ Could not create goals file');
+			new Notice('❌ could not create goals file');
 			return;
 		}
 
@@ -169,7 +169,7 @@ export class GoalsManager {
 		if (!goalsFile) return;
 
 		await this.writeGoalsToFile(goalsFile, person, filteredGoals);
-		new Notice('✅ Goal deleted');
+		new Notice('✅ goal deleted');
 	}
 
 	/**
