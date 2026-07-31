@@ -1,6 +1,6 @@
 // ABOUTME: Service for managing person profiles
 // ABOUTME: Handles CRUD operations for people data stored in vault
-import {App, TFile, TFolder} from 'obsidian';
+import {App, TFile} from 'obsidian';
 import {PersonProfile, AgendaItem} from './types';
 import {OneOnOneSettings} from './settings';
 

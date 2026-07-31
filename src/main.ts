@@ -1,13 +1,12 @@
 // ABOUTME: Main plugin entry point for 1:1 Manager
 // ABOUTME: Registers commands, views, and handles plugin lifecycle
-import {Plugin, WorkspaceLeaf, Notice, Modal} from 'obsidian';
+import {Plugin, Notice, Modal} from 'obsidian';
 import {DEFAULT_SETTINGS, OneOnOneSettings, OneOnOneSettingTab} from "./settings";
 import {DashboardView, DASHBOARD_VIEW_TYPE} from './dashboard-view';
 import {TimelineView, TIMELINE_VIEW_TYPE} from './timeline-view';
 import {GoalsView, GOALS_VIEW_TYPE} from './goals-view';
 import {CreateMeetingModal} from './create-meeting-modal';
 import {PersonProfileModal} from './person-profile-modal';
-import {GoalModal} from './goal-modal';
 import {AgendaItemModal} from './agenda-item-modal';
 import {PeopleManager} from './people-manager';
 import {GoalsManager} from './goals-manager';

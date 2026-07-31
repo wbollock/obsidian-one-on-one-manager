@@ -279,7 +279,7 @@ export class GoalsView extends ItemView {
 
 	private async renderArchivedGoals(container: HTMLElement, goals: Goal[]): Promise<void> {
 		const section = container.createEl('div', {cls: 'goals-section archived-section'});
-		const header = section.createEl('h2', {text: `📦 Archived Goals (${goals.length})`});
+		section.createEl('h2', {text: `📦 Archived Goals (${goals.length})`});
 		
 		const description = section.createEl('p', {cls: 'section-description'});
 		description.setText('These goals have been archived from previous years.');

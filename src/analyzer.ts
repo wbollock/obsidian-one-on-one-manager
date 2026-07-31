@@ -1,6 +1,6 @@
 // ABOUTME: Service for analyzing 1:1 meeting notes
 // ABOUTME: Extracts action items and metadata from markdown files
-import {App, TFile, moment} from 'obsidian';
+import {App, TFile} from 'obsidian';
 import {OneOnOneMeeting, ActionItem, PersonStats} from './types';
 import {OneOnOneSettings} from './settings';
 
@@ -112,13 +112,11 @@ export class MeetingAnalyzer {
 
 		const moods: string[] = [];
 		let openActions = 0;
-		let totalActions = 0;
 
 		for (const meeting of personMeetings) {
 			if (meeting.mood) moods.push(meeting.mood);
 
 			for (const action of meeting.actionItems) {
-				totalActions++;
 				if (!action.completed) openActions++;
 			}
 		}

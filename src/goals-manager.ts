@@ -1,7 +1,7 @@
 // ABOUTME: Service for managing goals and OKRs for direct reports
 // ABOUTME: Handles CRUD operations, check-ins, and progress tracking
 import {App, TFile, Notice} from 'obsidian';
-import {Goal, GoalCheckIn, GoalStats, KeyResult} from './types';
+import {Goal, GoalCheckIn, GoalStats} from './types';
 import {OneOnOneSettings} from './settings';
 
 export class GoalsManager {
@@ -15,7 +15,6 @@ export class GoalsManager {
 		if (!goalsFile) return [];
 
 		try {
-			const content = await this.app.vault.read(goalsFile);
 			const cache = this.app.metadataCache.getFileCache(goalsFile);
 			const frontmatter = cache?.frontmatter as {goals?: Goal[]} | undefined;
 

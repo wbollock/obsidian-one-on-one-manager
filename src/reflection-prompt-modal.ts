@@ -1,6 +1,6 @@
 // ABOUTME: Modal for post-1:1 reflection prompts
 // ABOUTME: Helps managers capture observations and reactions after meetings
-import {App, Modal, Notice, TFile} from 'obsidian';
+import {App, Modal} from 'obsidian';
 import OneOnOneManager from './main';
 
 export class ReflectionPromptModal extends Modal {

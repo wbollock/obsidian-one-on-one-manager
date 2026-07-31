@@ -82,7 +82,7 @@ export class TimelineView extends ItemView {
 		for (const meeting of meetings) {
 			const item = timeline.createEl('div', {cls: 'timeline-item'});
 			
-			const marker = item.createEl('div', {cls: 'timeline-marker'});
+			item.createEl('div', {cls: 'timeline-marker'});
 			const content = item.createEl('div', {cls: 'timeline-content'});
 
 			const header = content.createEl('div', {cls: 'meeting-header'});

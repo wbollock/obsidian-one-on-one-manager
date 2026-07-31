@@ -502,7 +502,7 @@ export class DashboardView extends ItemView {
 			const checkbox = item.createEl('input', {type: 'checkbox'});
 			checkbox.checked = false;
 			
-			const text = item.createEl('span', {text: action.text, cls: 'action-text'});
+			item.createEl('span', {text: action.text, cls: 'action-text'});
 			
 			const meta = item.createEl('span', {cls: 'action-meta'});
 			meta.createEl('span', {text: action.person});

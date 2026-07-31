@@ -39,7 +39,7 @@ export class AgendaItemModal extends Modal {
 
 		const buttons = form.createEl('div', {cls: 'form-buttons'});
 		
-		const submitBtn = buttons.createEl('button', {
+		buttons.createEl('button', {
 			text: 'Add item',
 			type: 'submit',
 			cls: 'mod-cta'
