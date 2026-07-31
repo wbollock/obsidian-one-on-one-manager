@@ -287,8 +287,7 @@ export class DashboardView extends ItemView {
 					
 					const text = agendaItem.createEl('span', {text: item.text, cls: 'person-agenda-text'});
 					if (item.priority === 'high') {
-						text.style.fontWeight = '600';
-						text.style.color = 'var(--text-error)';
+						text.addClass('is-high-priority');
 					}
 					
 					const deleteBtn = agendaItem.createEl('button', {
@@ -392,8 +391,7 @@ export class DashboardView extends ItemView {
 					
 					const text = agendaItem.createEl('span', {text: newItem.text, cls: 'person-agenda-text'});
 					if (newItem.priority === 'high') {
-						text.style.fontWeight = '600';
-						text.style.color = 'var(--text-error)';
+						text.addClass('is-high-priority');
 					}
 					
 					const deleteBtn = agendaItem.createEl('button', {

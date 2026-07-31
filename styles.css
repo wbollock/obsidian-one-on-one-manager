@@ -291,6 +291,11 @@
 	white-space: nowrap;
 }
 
+.person-agenda-text.is-high-priority {
+	font-weight: 600;
+	color: var(--text-error);
+}
+
 .person-agenda-delete {
 	background: var(--interactive-accent);
 	border: none;
@@ -1670,6 +1675,18 @@
 }
 
 /* Template Settings Buttons */
+.template-buttons {
+	display: flex;
+	gap: 10px;
+	margin-bottom: 15px;
+}
+
+.template-fallback-textarea {
+	width: 100%;
+	font-family: var(--font-monospace);
+	font-size: 0.9em;
+}
+
 .template-buttons button {
 	padding: 8px 16px;
 	border: none;

@@ -89,7 +89,7 @@ export class GoalModal extends Modal {
 					.setValue(this.description)
 					.onChange(value => this.description = value);
 				text.inputEl.rows = 4;
-				text.inputEl.style.width = '100%';
+				text.inputEl.addClass('goal-description-textarea');
 			});
 
 		// Category

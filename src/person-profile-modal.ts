@@ -51,8 +51,7 @@ export class PersonProfileModal extends Modal {
 				}
 			});
 			nameInput.value = this.profile.name;
-			nameInput.style.backgroundColor = 'var(--background-secondary)';
-			nameInput.style.cursor = 'not-allowed';
+			nameInput.addClass('is-readonly-field');
 		}
 
 		this.createField(form, 'Role', 'text', this.profile.role || '', (value) => {

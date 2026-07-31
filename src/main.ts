@@ -100,18 +100,12 @@ export default class OneOnOneManager extends Plugin {
 				modal.titleEl.setText('Select person for agenda item');
 				
 				const select = modal.contentEl.createEl('select', {cls: 'agenda-person-select'});
-				select.style.width = '100%';
-				select.style.padding = '10px';
-				select.style.marginBottom = '15px';
-				select.style.fontSize = '1em';
-				
+
 				for (const name of personNames) {
 					select.createEl('option', {value: name, text: name});
 				}
-				
-				const btn = modal.contentEl.createEl('button', {text: 'Continue', cls: 'mod-cta'});
-				btn.style.width = '100%';
-				btn.style.padding = '10px';
+
+				const btn = modal.contentEl.createEl('button', {text: 'Continue', cls: 'mod-cta agenda-person-continue-btn'});
 				
 				btn.addEventListener('click', () => {
 					const selectedPerson = select.value;

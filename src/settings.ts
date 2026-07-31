@@ -125,9 +125,6 @@ export class OneOnOneSettingTab extends PluginSettingTab {
 		templateDesc.appendText('.');
 
 		const templateButtons = containerEl.createEl('div', {cls: 'template-buttons'});
-		templateButtons.style.marginBottom = '15px';
-		templateButtons.style.display = 'flex';
-		templateButtons.style.gap = '10px';
 
 		const openTemplateBtn = templateButtons.createEl('button', {
 			text: '📝 Edit Template',
@@ -149,9 +146,7 @@ export class OneOnOneSettingTab extends PluginSettingTab {
 					});
 				text.inputEl.rows = 15;
 				text.inputEl.cols = 60;
-				text.inputEl.style.width = '100%';
-				text.inputEl.style.fontFamily = 'monospace';
-				text.inputEl.style.fontSize = '0.9em';
+				text.inputEl.addClass('template-fallback-textarea');
 			});
 	}
 
