@@ -75,8 +75,9 @@ export class AgendaItemModal extends Modal {
 			new Notice(`Added agenda item for ${this.personName}`);
 			await this.onSubmit(newItem);
 			this.close();
-		} catch (error: any) {
-			new Notice(`Error: ${error.message}`);
+		} catch (error) {
+			const message = error instanceof Error ? error.message : 'Unknown error';
+			new Notice(`Error: ${message}`);
 		}
 	}
 

@@ -1,7 +1,7 @@
 // ABOUTME: Service for managing goals and OKRs for direct reports
 // ABOUTME: Handles CRUD operations, check-ins, and progress tracking
 import {App, TFile, Notice} from 'obsidian';
-import {Goal, GoalCheckIn, KeyResult} from './types';
+import {Goal, GoalCheckIn, GoalStats, KeyResult} from './types';
 import {OneOnOneSettings} from './settings';
 
 export class GoalsManager {
@@ -17,10 +17,11 @@ export class GoalsManager {
 		try {
 			const content = await this.app.vault.read(goalsFile);
 			const cache = this.app.metadataCache.getFileCache(goalsFile);
-			
-			if (!cache?.frontmatter?.goals) return [];
-			
-			const goalsData = cache.frontmatter.goals;
+			const frontmatter = cache?.frontmatter as {goals?: Goal[]} | undefined;
+
+			if (!frontmatter?.goals) return [];
+
+			const goalsData = frontmatter.goals;
 			let goals = Array.isArray(goalsData) ? goalsData : [];
 			
 			// Filter by year if specified
@@ -76,8 +77,9 @@ export class GoalsManager {
 		for (const file of files) {
 			try {
 				const cache = this.app.metadataCache.getFileCache(file);
-				if (cache?.frontmatter?.goals) {
-					const goals: Goal[] = cache.frontmatter.goals;
+				const frontmatter = cache?.frontmatter as {goals?: Goal[]} | undefined;
+				if (frontmatter?.goals) {
+					const goals = frontmatter.goals;
 					const activeGoals = goals.filter(g => {
 						const isActive = g.status !== 'completed' && g.status !== 'abandoned' && !g.archived;
 						const isCurrentYear = includeAllYears || g.year === currentYear;
@@ -316,14 +318,7 @@ export class GoalsManager {
 	/**
 	 * Generate goal statistics for a person (current year by default)
 	 */
-	async getGoalStats(person: string, year?: number): Promise<{
-		year: number;
-		total: number;
-		completed: number;
-		inProgress: number;
-		atRisk: number;
-		avgProgress: number;
-	}> {
+	async getGoalStats(person: string, year?: number): Promise<GoalStats> {
 		const currentYear = year || new Date().getFullYear();
 		const goals = await this.getPersonGoals(person, currentYear);
 

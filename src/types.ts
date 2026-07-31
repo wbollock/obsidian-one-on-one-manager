@@ -86,6 +86,15 @@ export interface KeyResult {
 	completed: boolean;
 }
 
+export interface GoalStats {
+	year: number;
+	total: number;
+	completed: number;
+	inProgress: number;
+	atRisk: number;
+	avgProgress: number;
+}
+
 export interface GoalCheckIn {
 	id: string;
 	date: string;

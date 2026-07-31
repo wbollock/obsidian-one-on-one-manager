@@ -4,6 +4,17 @@ import {App, TFile, TFolder} from 'obsidian';
 import {PersonProfile, AgendaItem} from './types';
 import {OneOnOneSettings} from './settings';
 
+interface PersonProfileFrontmatter {
+	name?: string;
+	role?: string;
+	level?: string;
+	team?: string;
+	reportsTo?: string;
+	startDate?: string;
+	notes?: string;
+	agendaItems?: AgendaItem[];
+}
+
 export class PeopleManager {
 	constructor(private app: App, private settings: OneOnOneSettings) {}
 
@@ -28,7 +39,7 @@ export class PeopleManager {
 			const cache = this.app.metadataCache.getFileCache(file);
 			if (!cache?.frontmatter) return null;
 
-			const fm = cache.frontmatter;
+			const fm = cache.frontmatter as PersonProfileFrontmatter;
 			return {
 				name: fm.name || file.basename,
 				role: fm.role,

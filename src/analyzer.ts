@@ -4,6 +4,13 @@ import {App, TFile, moment} from 'obsidian';
 import {OneOnOneMeeting, ActionItem, PersonStats} from './types';
 import {OneOnOneSettings} from './settings';
 
+interface MeetingFrontmatter {
+	person?: string;
+	date?: string;
+	mood?: string;
+	topics?: unknown;
+}
+
 export class MeetingAnalyzer {
 	constructor(private app: App, private settings: OneOnOneSettings) {}
 
@@ -49,7 +56,7 @@ export class MeetingAnalyzer {
 		
 		if (!cache?.frontmatter) return null;
 
-		const frontmatter = cache.frontmatter;
+		const frontmatter = cache.frontmatter as MeetingFrontmatter;
 		const person = frontmatter.person || 'Unknown';
 		const date = frontmatter.date || file.basename;
 		const mood = frontmatter.mood;
@@ -68,8 +75,8 @@ export class MeetingAnalyzer {
 		};
 	}
 
-	private parseTopics(topics: any): string[] {
-		if (Array.isArray(topics)) return topics;
+	private parseTopics(topics: unknown): string[] {
+		if (Array.isArray(topics)) return topics.map(t => String(t));
 		if (typeof topics === 'string') return topics.split(',').map(t => t.trim());
 		return [];
 	}

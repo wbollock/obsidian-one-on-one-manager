@@ -3,7 +3,7 @@
 import {ItemView, WorkspaceLeaf, Notice} from 'obsidian';
 import OneOnOneManager from './main';
 import {GoalsManager} from './goals-manager';
-import {Goal} from './types';
+import {Goal, GoalStats} from './types';
 import {GoalModal} from './goal-modal';
 import {ConfirmModal} from './confirm-modal';
 
@@ -134,7 +134,7 @@ export class GoalsView extends ItemView {
 		}
 	}
 
-	private async renderStatsSummary(container: HTMLElement, stats: any): Promise<void> {
+	private async renderStatsSummary(container: HTMLElement, stats: GoalStats): Promise<void> {
 		const statsSection = container.createEl('div', {cls: 'goals-stats-section'});
 
 		const statsGrid = statsSection.createEl('div', {cls: 'stats-grid'});

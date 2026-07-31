@@ -3,6 +3,7 @@
 import {ItemView, WorkspaceLeaf} from 'obsidian';
 import OneOnOneManager from './main';
 import {MeetingAnalyzer} from './analyzer';
+import {OneOnOneMeeting, PersonStats} from './types';
 
 export const TIMELINE_VIEW_TYPE = 'one-on-one-timeline';
 
@@ -57,7 +58,7 @@ export class TimelineView extends ItemView {
 		await this.renderMeetings(contentEl, personMeetings);
 	}
 
-	private async renderStats(container: HTMLElement, stats: any): Promise<void> {
+	private async renderStats(container: HTMLElement, stats: PersonStats): Promise<void> {
 		const section = container.createEl('div', {cls: 'timeline-stats'});
 
 		const grid = section.createEl('div', {cls: 'stats-grid'});
@@ -74,7 +75,7 @@ export class TimelineView extends ItemView {
 		card.createEl('div', {text: label, cls: 'stat-label'});
 	}
 
-	private async renderMeetings(container: HTMLElement, meetings: any[]): Promise<void> {
+	private async renderMeetings(container: HTMLElement, meetings: OneOnOneMeeting[]): Promise<void> {
 		const timeline = container.createEl('div', {cls: 'timeline-container'});
 		timeline.createEl('h2', {text: 'Meeting History'});
 

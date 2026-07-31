@@ -1,6 +1,6 @@
 // ABOUTME: Settings configuration for 1:1 Manager plugin
 // ABOUTME: Defines user preferences for folders and templates
-import {App, Notice, PluginSettingTab, Setting} from "obsidian";
+import {App, Notice, PluginSettingTab, Setting, TFile} from "obsidian";
 import OneOnOneManager from "./main";
 
 export interface OneOnOneSettings {
@@ -204,14 +204,14 @@ ${this.plugin.settings.meetingTemplate}
 					// If file already exists, just try to get it again
 					console.debug('File creation note:', error);
 					templateFile = this.app.vault.getAbstractFileByPath(templatePath);
-					if (templateFile) {
+					if (templateFile instanceof TFile) {
 						// Update the existing file
-						await this.app.vault.modify(templateFile as any, templateContent);
+						await this.app.vault.modify(templateFile, templateContent);
 					}
 				}
-			} else {
+			} else if (templateFile instanceof TFile) {
 				// Update existing file
-				await this.app.vault.modify(templateFile as any, templateContent);
+				await this.app.vault.modify(templateFile, templateContent);
 			}
 
 			// Open the template file
@@ -227,12 +227,12 @@ ${this.plugin.settings.meetingTemplate}
 		const templatePath = `${this.plugin.settings.oneOnOneFolder}/templates/meeting-template.md`;
 		const templateFile = this.app.vault.getAbstractFileByPath(templatePath);
 
-		if (!templateFile) {
+		if (!(templateFile instanceof TFile)) {
 			new Notice('Template file not found. Click "Edit template in note" first to create it.');
 			return;
 		}
 
-		const content = await this.app.vault.read(templateFile as any);
+		const content = await this.app.vault.read(templateFile);
 		
 		// Extract template between the --- markers
 		const match = content.match(/---\n\n([\s\S]*?)\n\n---/);

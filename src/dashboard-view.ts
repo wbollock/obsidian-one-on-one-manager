@@ -8,6 +8,7 @@ import {CreateMeetingModal} from './create-meeting-modal';
 import {AgendaItemModal} from './agenda-item-modal';
 import {PersonPickerModal} from './person-picker-modal';
 import {ConfirmModal} from './confirm-modal';
+import {AgendaItem, OneOnOneMeeting, PersonProfile} from './types';
 
 export const DASHBOARD_VIEW_TYPE = 'one-on-one-dashboard';
 
@@ -149,7 +150,7 @@ export class DashboardView extends ItemView {
 		}
 	}
 
-	private async renderOverview(container: HTMLElement, meetings: any[], people: string[]): Promise<void> {
+	private async renderOverview(container: HTMLElement, meetings: OneOnOneMeeting[], people: string[]): Promise<void> {
 		const stats = container.createEl('div', {cls: 'stats-grid'});
 
 		const thisMonth = meetings.filter(m => {
@@ -178,7 +179,7 @@ export class DashboardView extends ItemView {
 		card.createEl('span', {text: label, cls: 'stat-label'});
 	}
 
-	private async renderPeopleSection(container: HTMLElement, people: string[], profiles: any[]): Promise<void> {
+	private async renderPeopleSection(container: HTMLElement, people: string[], profiles: PersonProfile[]): Promise<void> {
 		const section = container.createEl('div', {cls: 'dashboard-section'});
 		section.createEl('h3', {text: 'Team', cls: 'dashboard-section-title'});
 
@@ -264,7 +265,7 @@ export class DashboardView extends ItemView {
 
 		// Show agenda items
 		if (profile?.agendaItems && profile.agendaItems.length > 0) {
-			const pendingItems = profile.agendaItems.filter((item: any) => !item.completed);
+			const pendingItems = profile.agendaItems.filter((item: AgendaItem) => !item.completed);
 			if (pendingItems.length > 0) {
 				const agendaSection = details.createEl('div', {cls: 'person-agenda-section'});
 				const agendaHeader = agendaSection.createEl('div', {cls: 'person-agenda-header'});
@@ -450,7 +451,7 @@ export class DashboardView extends ItemView {
 		});
 		editBtn.addEventListener('click', (e) => {
 			e.stopPropagation();
-			new PersonProfileModal(this.app, this.plugin, profile, async (updatedProfile) => {
+			new PersonProfileModal(this.app, this.plugin, profile ?? null, async (updatedProfile) => {
 				await this.plugin.peopleManager.savePersonProfile(updatedProfile);
 				await new Promise(resolve => setTimeout(resolve, 100));
 				await this.render();
@@ -478,12 +479,12 @@ export class DashboardView extends ItemView {
 		}
 	}
 
-	private async renderActionItemsSection(container: HTMLElement, meetings: any[]): Promise<void> {
+	private async renderActionItemsSection(container: HTMLElement, meetings: OneOnOneMeeting[]): Promise<void> {
 		const section = container.createEl('div', {cls: 'dashboard-section'});
 		section.createEl('h3', {text: 'Open action items', cls: 'dashboard-section-title'});
 
-		const allActions = meetings.flatMap(m => 
-			m.actionItems.map((a: any) => ({...a, person: m.person, meetingDate: m.date}))
+		const allActions = meetings.flatMap(m =>
+			m.actionItems.map(a => ({...a, person: m.person, meetingDate: m.date}))
 		);
 
 		const incomplete = allActions.filter(a => !a.completed);
